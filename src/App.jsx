@@ -1,121 +1,94 @@
 import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
+import AppHeader from './components/AppHeader.jsx'
+import NotificationInput, { MAX_LENGTH } from './components/NotificationInput.jsx'
+import ResultPanel from './components/ResultPanel.jsx'
+import { sampleNotifications } from './data/sampleNotifications.js'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
+  // The message currently in the input area.
+  const [text, setText] = useState('')
+  // Which sample card is selected, if any.
+  const [selectedSampleId, setSelectedSampleId] = useState(null)
+  // The result being shown, plus the exact original text it came from.
+  const [result, setResult] = useState(null)
+  const [resultOriginal, setResultOriginal] = useState('')
+  // Whether the original-message panel is expanded.
+  const [isOriginalOpen, setIsOriginalOpen] = useState(false)
+  // A plain-language notice shown near the input (validation or info).
+  const [notice, setNotice] = useState('')
+
+  // Selecting a sample fills the input with its text and clears any old result.
+  function handleSelectSample(id) {
+    const sample = sampleNotifications.find((item) => item.id === id)
+    if (!sample) return
+    setSelectedSampleId(id)
+    setText(sample.text)
+    setResult(null)
+    setNotice('')
+    setIsOriginalOpen(false)
+  }
+
+  // Typing clears the sample selection, since the message is now the user's own.
+  function handleChangeText(value) {
+    setText(value)
+    if (selectedSampleId) setSelectedSampleId(null)
+    if (notice) setNotice('')
+  }
+
+  // "Explain this message": for this milestone we only have fixed example
+  // results for the three sample messages. We never invent a result for
+  // arbitrary pasted text, so we say so plainly instead.
+  function handleExplain() {
+    const trimmed = text.trim()
+    if (trimmed.length === 0) {
+      setNotice('Please choose an example or paste a message first.')
+      return
+    }
+    if (text.length > MAX_LENGTH) {
+      setNotice('This message is too long. Please shorten it and try again.')
+      return
+    }
+
+    const sample = sampleNotifications.find((item) => item.id === selectedSampleId)
+    if (!sample) {
+      setResult(null)
+      setNotice(
+        'Example explanations are available for the three example messages above. ' +
+          'Explaining your own messages is coming in a later version.',
+      )
+      return
+    }
+
+    setNotice('')
+    setResult(sample.exampleResult)
+    setResultOriginal(sample.text)
+    setIsOriginalOpen(false)
+  }
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+    <main className="dc-app">
+      <AppHeader />
 
-      <div className="ticks"></div>
+      <NotificationInput
+        samples={sampleNotifications}
+        selectedSampleId={selectedSampleId}
+        text={text}
+        onSelectSample={handleSelectSample}
+        onChangeText={handleChangeText}
+        onExplain={handleExplain}
+        notice={notice}
+      />
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+      {result && (
+        <ResultPanel
+          result={result}
+          original={resultOriginal}
+          isOriginalOpen={isOriginalOpen}
+          onToggleOriginal={() => setIsOriginalOpen((open) => !open)}
+        />
+      )}
+    </main>
   )
 }
 

@@ -1,184 +1,388 @@
-.counter {
-  font-size: 16px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  color: var(--accent);
-  background: var(--accent-bg);
-  border: 2px solid transparent;
-  transition: border-color 0.3s;
-  margin-bottom: 24px;
+/* DeClear interface styles.
+   Plain CSS, built on the design tokens in index.css. Priorities: large
+   readable type, strong contrast, meaning never carried by colour alone,
+   clear action labels, and a calm single-column layout that works on small
+   and large screens. */
 
-  &:hover {
-    border-color: var(--accent-border);
-  }
-  &:focus-visible {
-    outline: 2px solid var(--accent);
-    outline-offset: 2px;
+:root {
+  /* Accessible, high-contrast tokens layered on top of the base theme. */
+  --dc-ink: #1a1526;
+  --dc-ink-soft: #413a52;
+  --dc-surface: #ffffff;
+  --dc-surface-alt: #f6f4fb;
+  --dc-line: #cbc6d6;
+  --dc-accent: #6b2fb3;
+  --dc-accent-ink: #ffffff;
+  --dc-focus: #6b2fb3;
+  --dc-warn-bg: #fff4e0;
+  --dc-warn-ink: #5a3b00;
+  --dc-radius: 12px;
+  --dc-gap: 28px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --dc-ink: #f4f1fa;
+    --dc-ink-soft: #cdc7da;
+    --dc-surface: #1d1a26;
+    --dc-surface-alt: #262233;
+    --dc-line: #3d3850;
+    --dc-accent: #c79cff;
+    --dc-accent-ink: #1a1526;
+    --dc-focus: #c79cff;
+    --dc-warn-bg: #3a2e12;
+    --dc-warn-ink: #ffe3ad;
   }
 }
 
-.hero {
-  position: relative;
-
-  .base,
-  .framework,
-  .vite {
-    inset-inline: 0;
-    margin: 0 auto;
-  }
-
-  .base {
-    width: 170px;
-    position: relative;
-    z-index: 0;
-  }
-
-  .framework,
-  .vite {
-    position: absolute;
-  }
-
-  .framework {
-    z-index: 1;
-    top: 34px;
-    height: 28px;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(44deg) rotateY(39deg)
-      scale(1.4);
-  }
-
-  .vite {
-    z-index: 0;
-    top: 107px;
-    height: 26px;
-    width: auto;
-    transform: perspective(2000px) rotateZ(300deg) rotateX(40deg) rotateY(39deg)
-      scale(0.8);
-  }
-}
-
-#center {
+.dc-app {
   display: flex;
   flex-direction: column;
-  gap: 25px;
-  place-content: center;
-  place-items: center;
-  flex-grow: 1;
+  gap: var(--dc-gap);
+  padding: 32px 0 64px;
+  color: var(--dc-ink);
+}
 
-  @media (max-width: 1024px) {
-    padding: 32px 20px 24px;
-    gap: 18px;
+/* Visually hidden but available to screen readers. */
+.dc-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Header ---------- */
+.dc-header {
+  border-bottom: 2px solid var(--dc-line);
+  padding-bottom: 20px;
+}
+
+.dc-brand {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--dc-accent);
+  margin: 0 0 8px;
+}
+
+.dc-tagline {
+  font-size: 32px;
+  line-height: 1.25;
+  letter-spacing: normal;
+  margin: 0;
+  color: var(--dc-ink);
+}
+
+@media (max-width: 640px) {
+  .dc-tagline {
+    font-size: 26px;
   }
 }
 
-#next-steps {
+/* ---------- Shared headings / blocks ---------- */
+.dc-input h2,
+.dc-result h2 {
+  font-size: 24px;
+  color: var(--dc-ink);
+  margin: 0 0 16px;
+}
+
+.dc-block {
+  border: 2px solid var(--dc-line);
+  border-radius: var(--dc-radius);
+  padding: 20px;
+  background: var(--dc-surface);
+  margin-bottom: 20px;
+}
+
+.dc-block h3 {
+  font-size: 20px;
+  margin: 0 0 12px;
+  color: var(--dc-ink);
+}
+
+/* ---------- Input section ---------- */
+.dc-sample-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+@media (max-width: 720px) {
+  .dc-sample-list {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dc-sample-card {
   display: flex;
-  border-top: 1px solid var(--border);
+  flex-direction: column;
+  gap: 8px;
   text-align: left;
-
-  & > div {
-    flex: 1 1 0;
-    padding: 32px;
-    @media (max-width: 1024px) {
-      padding: 24px 20px;
-    }
-  }
-
-  .icon {
-    margin-bottom: 16px;
-    width: 22px;
-    height: 22px;
-  }
-
-  @media (max-width: 1024px) {
-    flex-direction: column;
-    text-align: center;
-  }
+  padding: 18px;
+  border: 2px solid var(--dc-line);
+  border-radius: var(--dc-radius);
+  background: var(--dc-surface);
+  color: var(--dc-ink);
+  cursor: pointer;
+  font: inherit;
 }
 
-#docs {
-  border-right: 1px solid var(--border);
-
-  @media (max-width: 1024px) {
-    border-right: none;
-    border-bottom: 1px solid var(--border);
-  }
+.dc-sample-card:hover {
+  border-color: var(--dc-accent);
 }
 
-#next-steps ul {
+.dc-sample-card.is-selected {
+  border-color: var(--dc-accent);
+  background: var(--dc-surface-alt);
+  box-shadow: inset 0 0 0 2px var(--dc-accent);
+}
+
+.dc-sample-card__title {
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.dc-sample-card__summary {
+  font-size: 16px;
+  color: var(--dc-ink-soft);
+  line-height: 1.5;
+}
+
+.dc-sample-card__state {
+  margin-top: 4px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--dc-accent);
+}
+
+.dc-paste {
+  margin-bottom: 20px;
+}
+
+.dc-label {
+  display: block;
+  font-size: 19px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: var(--dc-ink);
+}
+
+.dc-textarea {
+  width: 100%;
+  box-sizing: border-box;
+  font: inherit;
+  font-size: 18px;
+  line-height: 1.6;
+  padding: 14px;
+  border: 2px solid var(--dc-line);
+  border-radius: var(--dc-radius);
+  background: var(--dc-surface);
+  color: var(--dc-ink);
+  resize: vertical;
+}
+
+.dc-counter-text {
+  margin-top: 8px;
+  font-size: 16px;
+  color: var(--dc-ink-soft);
+}
+
+.dc-counter-text.is-over {
+  color: var(--dc-warn-ink);
+  font-weight: 600;
+}
+
+/* ---------- Buttons ---------- */
+.dc-primary-button {
+  display: block;
+  width: 100%;
+  font: inherit;
+  font-size: 22px;
+  font-weight: 700;
+  padding: 18px 24px;
+  border: 2px solid transparent;
+  border-radius: var(--dc-radius);
+  background: var(--dc-accent);
+  color: var(--dc-accent-ink);
+  cursor: pointer;
+}
+
+.dc-primary-button:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.dc-primary-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.dc-secondary-button {
+  font: inherit;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 12px 18px;
+  border: 2px solid var(--dc-accent);
+  border-radius: var(--dc-radius);
+  background: transparent;
+  color: var(--dc-accent);
+  cursor: pointer;
+}
+
+.dc-secondary-button:hover {
+  background: var(--dc-surface-alt);
+}
+
+/* Clear, consistent keyboard focus for every interactive element. */
+.dc-sample-card:focus-visible,
+.dc-textarea:focus-visible,
+.dc-primary-button:focus-visible,
+.dc-secondary-button:focus-visible {
+  outline: 3px solid var(--dc-focus);
+  outline-offset: 3px;
+}
+
+/* ---------- Notices ---------- */
+.dc-notice {
+  margin: 0 0 20px;
+  padding: 16px 18px;
+  font-size: 18px;
+  line-height: 1.5;
+  border: 2px solid var(--dc-warn-ink);
+  border-radius: var(--dc-radius);
+  background: var(--dc-warn-bg);
+  color: var(--dc-warn-ink);
+}
+
+/* ---------- Result section ---------- */
+.dc-result__disclaimer {
+  margin: 0 0 16px;
+  padding: 14px 16px;
+  font-size: 16px;
+  line-height: 1.5;
+  border: 2px dashed var(--dc-line);
+  border-radius: var(--dc-radius);
+  background: var(--dc-surface-alt);
+  color: var(--dc-ink-soft);
+}
+
+/* Urgency: a shape symbol + word + note so it reads without colour. */
+.dc-urgency {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-areas:
+    'symbol label'
+    'symbol note';
+  column-gap: 14px;
+  align-items: center;
+  padding: 18px 20px;
+  border: 3px solid var(--dc-ink);
+  border-radius: var(--dc-radius);
+  margin-bottom: 20px;
+  background: var(--dc-surface);
+}
+
+.dc-urgency__symbol {
+  grid-area: symbol;
+  font-size: 32px;
+  line-height: 1;
+}
+
+.dc-urgency__label {
+  grid-area: label;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.dc-urgency__note {
+  grid-area: note;
+  font-size: 17px;
+  color: var(--dc-ink-soft);
+}
+
+.dc-list {
   list-style: none;
+  margin: 0;
   padding: 0;
   display: flex;
-  gap: 8px;
-  margin: 32px 0 0;
-
-  .logo {
-    height: 18px;
-  }
-
-  a {
-    color: var(--text-h);
-    font-size: 16px;
-    border-radius: 6px;
-    background: var(--social-bg);
-    display: flex;
-    padding: 6px 12px;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-    transition: box-shadow 0.3s;
-
-    &:hover {
-      box-shadow: var(--shadow);
-    }
-    .button-icon {
-      height: 18px;
-      width: 18px;
-    }
-  }
-
-  @media (max-width: 1024px) {
-    margin-top: 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    li {
-      flex: 1 1 calc(50% - 8px);
-    }
-
-    a {
-      width: 100%;
-      justify-content: center;
-      box-sizing: border-box;
-    }
-  }
+  flex-direction: column;
+  gap: 16px;
 }
 
-#spacer {
-  height: 88px;
-  border-top: 1px solid var(--border);
-  @media (max-width: 1024px) {
-    height: 48px;
-  }
+.dc-list__item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 14px 16px;
+  border-left: 5px solid var(--dc-accent);
+  background: var(--dc-surface-alt);
+  border-radius: 6px;
 }
 
-.ticks {
-  position: relative;
-  width: 100%;
+.dc-date__when {
+  font-size: 20px;
+  font-weight: 700;
+}
 
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    top: -4.5px;
-    border: 5px solid transparent;
-  }
+.dc-date__what,
+.dc-action__text {
+  font-size: 18px;
+  line-height: 1.5;
+}
 
-  &::before {
-    left: 0;
-    border-left-color: var(--border);
-  }
-  &::after {
-    right: 0;
-    border-right-color: var(--border);
+.dc-uncertainty {
+  margin-top: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--dc-warn-ink);
+  background: var(--dc-warn-bg);
+  border-radius: 6px;
+  padding: 8px 10px;
+}
+
+.dc-explanation {
+  font-size: 20px;
+  line-height: 1.65;
+  color: var(--dc-ink);
+}
+
+.dc-empty {
+  font-size: 18px;
+  color: var(--dc-ink-soft);
+  margin: 0;
+}
+
+/* ---------- Original message ---------- */
+.dc-original {
+  margin-top: 4px;
+}
+
+.dc-original__body {
+  margin-top: 16px;
+}
+
+.dc-original__pre {
+  font-family: var(--mono);
+  font-size: 16px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding: 18px;
+  border: 2px solid var(--dc-line);
+  border-radius: var(--dc-radius);
+  background: var(--dc-surface-alt);
+  color: var(--dc-ink);
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
   }
 }
