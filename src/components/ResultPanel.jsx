@@ -1,4 +1,5 @@
 import OriginalMessage from './OriginalMessage.jsx'
+import ReadAloudControl from './ReadAloudControl.jsx'
 
 // Plain-language descriptions and shapes for each urgency level. Urgency is
 // conveyed by a word plus a shape symbol, never by colour alone.
@@ -18,7 +19,15 @@ function findUncertainty(indicators, kind, id) {
 
 // ResultPanel shows the deterministic example output for a selected sample.
 // The output is clearly labeled as a fixed example, not AI-generated content.
-function ResultPanel({ result, original, isOriginalOpen, onToggleOriginal }) {
+// `showReadAloud` and `speechLang` come from the user's settings.
+function ResultPanel({
+  result,
+  original,
+  isOriginalOpen,
+  onToggleOriginal,
+  showReadAloud,
+  speechLang,
+}) {
   const urgency = URGENCY_DISPLAY[result.urgencyLevel] ?? URGENCY_DISPLAY.None
 
   return (
@@ -95,6 +104,9 @@ function ResultPanel({ result, original, isOriginalOpen, onToggleOriginal }) {
       <div className="dc-block">
         <h3>Plain explanation</h3>
         <p className="dc-explanation">{result.explanation}</p>
+        {showReadAloud && (
+          <ReadAloudControl text={result.explanation} speechLang={speechLang} />
+        )}
       </div>
 
       <OriginalMessage
