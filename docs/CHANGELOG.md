@@ -8,6 +8,24 @@ Please do not edit entries by hand. Add notes above this line if needed.
 
 <!-- CHANGELOG:START -->
 <!-- New entries are inserted below this marker, newest first. -->
+### `94f512c` — 2026-11-07 17:11
+
+**make UI accessibe (details + French addition)**
+
+Changed files:
+
+- `src/App.css`
+- `src/App.jsx`
+- `src/components/ReadAloudControl.jsx`
+- `src/components/ResultPanel.jsx`
+- `src/components/SettingsPanel.jsx`
+- `src/data/sampleNotifications.js`
+- `src/data/settingsOptions.js`
+- `src/platform/speech.js`
+- `src/storage/settingsStorage.js`
+
+Stats: 9 files changed, 988 insertions(+), 100 deletions(-)
+
 ### `691b837` — 2026-11-07 16:51
 
 **first UI design implementation**
