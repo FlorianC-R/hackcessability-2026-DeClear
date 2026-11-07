@@ -38,6 +38,7 @@ export const ProcessStatus = {
   EMPTY_INPUT: 'empty-input', // nothing to process
   TOO_LONG: 'too-long', // message exceeds the size limit
   PROVIDER_UNAVAILABLE: 'provider-unavailable', // configured provider missing
+  ERROR: 'error', // a provider failed unexpectedly while processing
 }
 
 export const Providers = {

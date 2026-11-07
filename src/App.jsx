@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useState } from 'react'
 import AppHeader from './components/AppHeader.jsx'
 import NotificationInput from './components/NotificationInput.jsx'
 import ResultPanel from './components/ResultPanel.jsx'
@@ -23,6 +23,10 @@ function App() {
   // separate from the editable input lets us re-run the processor when
   // settings change without depending on later edits to the text box.
   const [submittedMessage, setSubmittedMessage] = useState(null)
+  // The resolved processing response (async). Null until the first result.
+  const [response, setResponse] = useState(null)
+  // True while a processing request is in flight, so we can show progress.
+  const [isProcessing, setIsProcessing] = useState(false)
   // Whether the original-message panel is expanded.
   const [isOriginalOpen, setIsOriginalOpen] = useState(false)
 
@@ -38,9 +42,26 @@ function App() {
   // Persist settings whenever they change, and remember if the save failed so
   // we can tell the user honestly.
   function handleSettingsChange(next) {
+    // If a result is on screen, changing level/language will re-run processing
+    // (via the effect), so show the in-progress state right away. Setting this
+    // from the event handler keeps the effect free of synchronous setState.
+    if (
+      submittedMessage !== null &&
+      (next.level !== settings.level || next.language !== settings.language)
+    ) {
+      setIsProcessing(true)
+    }
     setSettings(next)
     const ok = saveSettings(next)
     setSaveFailed(!ok)
+  }
+
+  // Clear any shown result and processing state. Called from the event
+  // handlers (not an effect) so we never set state synchronously inside one.
+  function clearResult() {
+    setSubmittedMessage(null)
+    setResponse(null)
+    setIsProcessing(false)
   }
 
   // Selecting a sample fills the input with its text and clears any old result.
@@ -49,7 +70,7 @@ function App() {
     if (!sample) return
     setSelectedSampleId(id)
     setText(sample.text)
-    setSubmittedMessage(null)
+    clearResult()
     setIsOriginalOpen(false)
   }
 
@@ -57,7 +78,7 @@ function App() {
   function handleChangeText(value) {
     setText(value)
     if (selectedSampleId) setSelectedSampleId(null)
-    if (submittedMessage !== null) setSubmittedMessage(null)
+    if (submittedMessage !== null) clearResult()
   }
 
   // "Explain this message": hand the text to the processing service. The
@@ -65,17 +86,48 @@ function App() {
   // results of its own.
   function handleExplain() {
     setSubmittedMessage(text)
+    setIsProcessing(true)
     setIsOriginalOpen(false)
   }
 
   // Run the processor whenever there is a submitted message or the preferences
   // change, so the shown explanation always reflects the current settings.
-  const response = useMemo(() => {
-    if (submittedMessage === null) return null
-    return processNotification({
+  // Processing is asynchronous, so we run it in an effect and store the
+  // resolved response. A `cancelled` flag ignores a stale result if the inputs
+  // change (or the component unmounts) before the promise settles.
+  useEffect(() => {
+    // Nothing submitted: the event handlers already cleared any result, so the
+    // effect has no work to do. (Avoids setting state synchronously here.)
+    if (submittedMessage === null) return
+
+    let cancelled = false
+
+    processNotification({
       message: submittedMessage,
       preferences: { level: settings.level, language: settings.language },
     })
+      .then((result) => {
+        if (cancelled) return
+        setResponse(result)
+        setIsProcessing(false)
+      })
+      .catch(() => {
+        // processNotification is designed not to reject, but guard anyway so a
+        // failure never leaves the UI stuck in a loading state.
+        if (cancelled) return
+        setResponse({
+          status: ProcessStatus.ERROR,
+          original: submittedMessage,
+          result: null,
+          message:
+            'Something went wrong while explaining this message. Please try again.',
+        })
+        setIsProcessing(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
   }, [submittedMessage, settings.level, settings.language])
 
   const speechLang =
@@ -83,10 +135,15 @@ function App() {
     'en-US'
 
   const okResult =
-    response && response.status === ProcessStatus.OK ? response.result : null
-  // Any non-OK status carries a plain-language message to show the user.
+    !isProcessing && response && response.status === ProcessStatus.OK
+      ? response.result
+      : null
+  // Any non-OK status carries a plain-language message to show the user. We
+  // suppress it while a new request is in flight so stale text does not linger.
   const notice =
-    response && response.status !== ProcessStatus.OK ? response.message : ''
+    !isProcessing && response && response.status !== ProcessStatus.OK
+      ? response.message
+      : ''
 
   return (
     <main className="dc-app">
@@ -110,6 +167,12 @@ function App() {
         onExplain={handleExplain}
         notice={notice}
       />
+
+      {isProcessing && (
+        <p className="dc-processing" role="status" aria-live="polite">
+          Working on your message…
+        </p>
+      )}
 
       {okResult && response && (
         <ResultPanel

@@ -489,3 +489,15 @@
   border-radius: 6px;
   margin-top: 10px;
 }
+
+/* Shown while a message is being processed (async). */
+.dc-processing {
+  margin: 0;
+  padding: 16px 18px;
+  font-size: 18px;
+  font-weight: 600;
+  border: 2px solid var(--dc-accent);
+  border-radius: var(--dc-radius);
+  background: var(--dc-surface-alt);
+  color: var(--dc-ink);
+}

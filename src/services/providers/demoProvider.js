@@ -62,7 +62,11 @@ function toProcessResult(sample, language, level) {
 
 // Process a message. Resolves to a partial response (status + result/message);
 // the orchestrator fills in original, provider, and preferences.
-export function process({ message, preferences }) {
+//
+// This is async to match the provider contract (some providers, such as a
+// future network-backed one, must be async). The demo provider does no I/O,
+// so it simply resolves immediately with the same deterministic output.
+export async function process({ message, preferences }) {
   const sample = matchSample(message)
 
   if (!sample) {

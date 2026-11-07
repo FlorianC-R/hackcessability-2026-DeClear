@@ -1,9 +1,10 @@
 // Provider registry.
 //
 // The processor asks this registry for a provider by id. Today only the
-// deterministic demo provider is registered. A future local Ollama provider
-// will implement the same { id, process(request) } shape and slot in here
-// with no changes to the processor or the UI.
+// deterministic demo provider is registered. A future provider (local Ollama
+// or a network-backed one) will implement the same async
+// { id, process(request): Promise } shape and slot in here with no changes to
+// the processor or the UI.
 
 import demoProvider from './demoProvider.js'
 import { Providers } from '../processorTypes.js'

@@ -47,9 +47,11 @@ function envelope({ status, provider, original, preferences, result, message }) 
  * @param {Object} [request.preferences] - accessibility preferences
  *        ({ level: 'brief'|'standard'|'guided', language: 'en'|'fr' })
  * @param {string} [request.providerId] - which provider to use (default: demo)
- * @returns {Object} the consistent response envelope (see processorTypes.js)
+ * @returns {Promise<Object>} resolves to the consistent response envelope
+ *          (see processorTypes.js). It never rejects: provider failures resolve
+ *          with status ProcessStatus.ERROR.
  */
-export function processNotification(request = {}) {
+export async function processNotification(request = {}) {
   const { message = '', providerId = Providers.DEMO } = request
   const preferences = resolvePreferences(request.preferences)
 
@@ -89,16 +91,30 @@ export function processNotification(request = {}) {
   }
 
   // Delegate to the provider, then fold its answer into the full envelope.
-  const outcome = provider.process({ message: original, preferences })
+  // Providers may be asynchronous (e.g. a future network-backed provider), so
+  // we await the outcome. A provider that throws is turned into a consistent
+  // error envelope rather than being allowed to reject.
+  try {
+    const outcome = await provider.process({ message: original, preferences })
 
-  return envelope({
-    status: outcome.status,
-    provider: provider.id,
-    original,
-    preferences,
-    result: outcome.result,
-    message: outcome.message,
-  })
+    return envelope({
+      status: outcome.status,
+      provider: provider.id,
+      original,
+      preferences,
+      result: outcome.result,
+      message: outcome.message,
+    })
+  } catch {
+    return envelope({
+      status: ProcessStatus.ERROR,
+      provider: provider.id,
+      original,
+      preferences,
+      message:
+        'Something went wrong while explaining this message. Please try again.',
+    })
+  }
 }
 
 export default { processNotification }
