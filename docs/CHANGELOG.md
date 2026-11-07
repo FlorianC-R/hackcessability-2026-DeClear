@@ -8,6 +8,19 @@ Please do not edit entries by hand. Add notes above this line if needed.
 
 <!-- CHANGELOG:START -->
 <!-- New entries are inserted below this marker, newest first. -->
+### `e2562d4` — 2026-11-07 16:36
+
+**feature specification MVP**
+
+Changed files:
+
+- `.kiro/specs/declear-mvp/.config.kiro`
+- `.kiro/specs/declear-mvp/design.md`
+- `.kiro/specs/declear-mvp/requirements.md`
+- `.kiro/specs/declear-mvp/tasks.md`
+
+Stats: 4 files changed, 962 insertions(+)
+
 ### `a0a7c45` — 2026-11-07 15:04
 
 **Created 3 primary agents developing agents**
