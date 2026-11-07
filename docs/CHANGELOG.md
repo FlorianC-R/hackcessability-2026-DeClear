@@ -8,6 +8,37 @@ Please do not edit entries by hand. Add notes above this line if needed.
 
 <!-- CHANGELOG:START -->
 <!-- New entries are inserted below this marker, newest first. -->
+### `cb66348` — 2026-11-07 17:38
+
+**docs: add AI development journal**
+
+Changed files:
+
+- `package-lock.json`
+- `package.json`
+- `src/App.css`
+- `src/App.jsx`
+- `src/components/ResultPanel.jsx`
+- `src/data/sampleNotifications.js`
+- `src/services/notificationProcessor.js`
+- `src/services/notificationProcessor.test.js`
+- `src/services/processorTypes.js`
+- `src/services/providers/demoProvider.js`
+- `src/services/providers/index.js`
+
+Stats: 11 files changed, 2246 insertions(+), 223 deletions(-)
+
+### `340146d` — 2026-11-07 17:38
+
+**docs: add AI development journal**
+
+Changed files:
+
+- `.kiro/agents/commit-reviewer.md`
+- `.kiro/hooks/journal-after-task.json`
+
+Stats: 2 files changed, 123 insertions(+), 42 deletions(-)
+
 ### `94f512c` — 2026-11-07 17:11
 
 **make UI accessibe (details + French addition)**
