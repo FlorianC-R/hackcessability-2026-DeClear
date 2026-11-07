@@ -1,0 +1,14 @@
+{
+  "version": "v1",
+  "hooks": [
+    {
+      "name": "Update Development Journal After Task",
+      "trigger": "PostTaskExecution",
+      "description": "After a spec task completes, ask the current agent to delegate to the commit-reviewer agent to document the work in docs/DEVELOPMENT_JOURNAL.md (beginner-friendly), without duplicating entries, inventing details, or committing.",
+      "action": {
+        "type": "agent",
+        "prompt": "A spec implementation task just completed. Update the DeClear development journal.\n\nDelegate this to the commit-reviewer agent (use the commit-reviewer sub-agent). Tell it to document the work that was just completed in docs/DEVELOPMENT_JOURNAL.md, in beginner-friendly language, covering: what changed, why (only if stated in the task/commit — never invented), how it works, and how to test it. Create the journal file if it does not exist, newest entries first.\n\nFollow these rules strictly:\n\n1. SKIP IF NOT A CODE TASK: If the completed task was only about documentation (for example it only changed docs/DEVELOPMENT_JOURNAL.md, other .md files, or the journal itself) and contains no application/source changes, do nothing and stop. This prevents an infinite loop where journaling triggers more journaling.\n\n2. NO DUPLICATES: Before writing, read docs/DEVELOPMENT_JOURNAL.md. Do not add an entry for work that is already documented. If nothing new needs documenting, stop.\n\n3. COMMIT HASH ONLY IF IT EXISTS: A completed task is NOT necessarily a Git commit. Check with read-only git (git log, git status). Only record a commit hash if that commit actually exists. If the work is not committed yet, write the entry WITHOUT a hash and note \"not yet committed\" instead of inventing or assigning one.\n\n4. IGNORE BOT COMMITS: Skip github-actions[bot] changelog commits and messages like \"docs: update changelog [skip ci]\".\n\n5. NEVER INVENT: Do not invent reasons, features, or test results. If intent is unclear, write \"intent not stated\". If you did not run a test, describe how the human can run it rather than claiming a result.\n\n6. NO AUTOMATIC COMMITS OR PUSHES: Only edit docs/DEVELOPMENT_JOURNAL.md. Do not commit, push, or change git history. The human decides when to commit.\n\nIf the commit-reviewer agent is unavailable, follow these same rules yourself using only read-only git inspection and editing docs/DEVELOPMENT_JOURNAL.md."
+      }
+    }
+  ]
+}
