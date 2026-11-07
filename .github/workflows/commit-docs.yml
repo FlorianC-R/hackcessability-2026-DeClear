@@ -1,0 +1,137 @@
+name: Commit Documentation
+
+# Run whenever commits land on main.
+on:
+  push:
+    branches: [main]
+
+# Only the ability to write repository contents (needed to commit the changelog).
+# Nothing else is granted.
+permissions:
+  contents: write
+
+# If several pushes happen quickly, let each finish in order instead of racing
+# to update the same file.
+concurrency:
+  group: commit-docs
+  cancel-in-progress: false
+
+jobs:
+  update-changelog:
+    runs-on: ubuntu-latest
+
+    # Loop guard #1: skip runs whose head commit was made by this bot.
+    # The bot commits as "github-actions[bot]", so we never process our own commit.
+    if: github.event.head_commit.author.name != 'github-actions[bot]'
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          # We need full history so we can read each pushed commit's details.
+          fetch-depth: 0
+
+      - name: Append new commits to changelog
+        env:
+          # The list of commit SHAs that this push introduced, oldest first.
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.event.after }}
+        run: |
+          set -euo pipefail
+
+          CHANGELOG="docs/CHANGELOG.md"
+          MARKER="<!-- New entries are inserted below this marker, newest first. -->"
+
+          # Figure out which commits are new in this push.
+          # On the very first push to a branch, BEFORE_SHA is all zeros, so we
+          # only document the single pushed commit to avoid dumping all history.
+          if [[ "$BEFORE_SHA" =~ ^0+$ ]]; then
+            COMMITS=$(git rev-list -n 1 "$AFTER_SHA")
+          else
+            COMMITS=$(git rev-list --reverse "${BEFORE_SHA}..${AFTER_SHA}")
+          fi
+
+          if [[ -z "$COMMITS" ]]; then
+            echo "No new commits to document."
+            exit 0
+          fi
+
+          added_any=false
+
+          for sha in $COMMITS; do
+            author_name=$(git show -s --format='%an' "$sha")
+
+            # Loop guard #2: never document the bot's own changelog commits.
+            if [[ "$author_name" == "github-actions[bot]" ]]; then
+              echo "Skipping bot commit $sha"
+              continue
+            fi
+
+            short_hash=$(git show -s --format='%h' "$sha")
+
+            # Loop guard #3: prevent duplicates. If this hash is already in the
+            # changelog, skip it (handles re-runs and overlapping pushes).
+            if grep -q "### \`$short_hash\`" "$CHANGELOG"; then
+              echo "Entry for $short_hash already exists, skipping."
+              continue
+            fi
+
+            commit_date=$(git show -s --format='%cd' --date=format:'%Y-%m-%d %H:%M' "$sha")
+            subject=$(git show -s --format='%s' "$sha")
+            files=$(git show --no-renames --name-only --format='' "$sha" | sed '/^$/d')
+            stats=$(git show --shortstat --format='' "$sha" | sed '/^$/d' | tail -n 1 | sed 's/^ *//')
+
+            # Build the entry in a temporary file.
+            {
+              echo "### \`$short_hash\` — $commit_date"
+              echo ""
+              echo "**$subject**"
+              echo ""
+              echo "Changed files:"
+              echo ""
+              while IFS= read -r f; do
+                [[ -n "$f" ]] && echo "- \`$f\`"
+              done <<< "$files"
+              echo ""
+              echo "Stats: ${stats:-no file changes}"
+              echo ""
+            } > entry.tmp
+
+            # Insert the new entry right after the marker (newest first).
+            awk -v marker="$MARKER" '
+              { print }
+              $0 == marker && !inserted {
+                while ((getline line < "entry.tmp") > 0) print line
+                close("entry.tmp")
+                inserted = 1
+              }
+            ' "$CHANGELOG" > changelog.tmp
+
+            mv changelog.tmp "$CHANGELOG"
+            rm -f entry.tmp
+            added_any=true
+            echo "Documented $short_hash"
+          done
+
+          if [[ "$added_any" != "true" ]]; then
+            echo "Nothing new to commit."
+            exit 0
+          fi
+
+      - name: Commit and push changelog
+        run: |
+          set -euo pipefail
+
+          # If nothing changed, don't create an empty commit (also a loop guard).
+          if git diff --quiet -- docs/CHANGELOG.md; then
+            echo "Changelog unchanged, skipping commit."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add docs/CHANGELOG.md
+          # [skip ci] is a final safety net so other CI doesn't react to this commit.
+          git commit -m "docs: update changelog [skip ci]"
+          git push
