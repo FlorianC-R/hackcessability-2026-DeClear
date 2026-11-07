@@ -8,6 +8,22 @@ Please do not edit entries by hand. Add notes above this line if needed.
 
 <!-- CHANGELOG:START -->
 <!-- New entries are inserted below this marker, newest first. -->
+### `99ea172` — 2026-11-07 18:30
+
+**async notification processing refactor**
+
+Changed files:
+
+- `src/App.css`
+- `src/App.jsx`
+- `src/services/notificationProcessor.js`
+- `src/services/notificationProcessor.test.js`
+- `src/services/processorTypes.js`
+- `src/services/providers/demoProvider.js`
+- `src/services/providers/index.js`
+
+Stats: 7 files changed, 184 insertions(+), 71 deletions(-)
+
 ### `cb66348` — 2026-11-07 17:38
 
 **docs: add AI development journal**
