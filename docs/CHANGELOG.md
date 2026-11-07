@@ -8,6 +8,25 @@ Please do not edit entries by hand. Add notes above this line if needed.
 
 <!-- CHANGELOG:START -->
 <!-- New entries are inserted below this marker, newest first. -->
+### `691b837` — 2026-11-07 16:51
+
+**first UI design implementation**
+
+Changed files:
+
+- `index.html`
+- `src/App.css`
+- `src/App.jsx`
+- `src/components/AppHeader.jsx`
+- `src/components/NotificationInput.jsx`
+- `src/components/OriginalMessage.jsx`
+- `src/components/ResultPanel.jsx`
+- `src/components/SampleCard.jsx`
+- `src/data/sampleNotifications.js`
+- `src/index.css`
+
+Stats: 10 files changed, 844 insertions(+), 260 deletions(-)
+
 ### `e2562d4` — 2026-11-07 16:36
 
 **feature specification MVP**
