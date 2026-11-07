@@ -39,6 +39,12 @@ If you cannot attend, call us at 555-0142 at least 24 hours in advance to resche
 
 Thank you,
 Riverside Medical Clinic`,
+    // Optional suggested reply the user may choose to send. It is a draft only;
+    // DeClear never sends anything on the user's behalf.
+    suggestedReply: {
+      en: 'Thank you for the reminder. I confirm I will attend my appointment with Dr. Lee on Tuesday, 18 November at 10:30 AM.',
+      fr: 'Merci pour le rappel. Je confirme que je serai présent(e) à mon rendez-vous avec le Dr Lee le mardi 18 novembre à 10 h 30.',
+    },
     results: {
       en: {
         brief: {
@@ -433,6 +439,11 @@ No need to do anything for now.
 
 Love,
 Sarah`,
+    // Optional suggested reply. A friendly draft the user can send if they wish.
+    suggestedReply: {
+      en: "Hi Sarah, lovely to hear from you! Next weekend sounds good. Give me a call when you can and we'll sort out the details. Love, Mum",
+      fr: "Bonjour Sarah, quel plaisir d'avoir de tes nouvelles ! Le week-end prochain me convient. Appelle-moi quand tu peux et nous réglerons les détails. Bisous, Maman",
+    },
     results: {
       en: {
         brief: {

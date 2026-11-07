@@ -1,12 +1,14 @@
 import { useMemo, useState } from 'react'
 import AppHeader from './components/AppHeader.jsx'
-import NotificationInput, { MAX_LENGTH } from './components/NotificationInput.jsx'
+import NotificationInput from './components/NotificationInput.jsx'
 import ResultPanel from './components/ResultPanel.jsx'
 import SettingsPanel from './components/SettingsPanel.jsx'
 import { sampleNotifications } from './data/sampleNotifications.js'
 import { LANGUAGES } from './data/settingsOptions.js'
 import { loadSettings, saveSettings } from './storage/settingsStorage.js'
 import { isSpeechSupported } from './platform/speech.js'
+import { processNotification } from './services/notificationProcessor.js'
+import { ProcessStatus } from './services/processorTypes.js'
 import './App.css'
 
 // Whether this browser can read text aloud. Computed once at startup.
@@ -17,14 +19,12 @@ function App() {
   const [text, setText] = useState('')
   // Which sample card is selected, if any.
   const [selectedSampleId, setSelectedSampleId] = useState(null)
-  // The id of the sample whose result is currently shown. The actual result
-  // is derived from this plus the current settings, so changing a setting
-  // updates the visible explanation immediately.
-  const [resultSampleId, setResultSampleId] = useState(null)
+  // The exact message that was last submitted for processing. Keeping this
+  // separate from the editable input lets us re-run the processor when
+  // settings change without depending on later edits to the text box.
+  const [submittedMessage, setSubmittedMessage] = useState(null)
   // Whether the original-message panel is expanded.
   const [isOriginalOpen, setIsOriginalOpen] = useState(false)
-  // A plain-language notice shown near the input (validation or info).
-  const [notice, setNotice] = useState('')
 
   // User settings, loaded from localStorage once at startup. If the browser
   // cannot read aloud, we never start with read-aloud "on".
@@ -49,8 +49,7 @@ function App() {
     if (!sample) return
     setSelectedSampleId(id)
     setText(sample.text)
-    setResultSampleId(null)
-    setNotice('')
+    setSubmittedMessage(null)
     setIsOriginalOpen(false)
   }
 
@@ -58,51 +57,36 @@ function App() {
   function handleChangeText(value) {
     setText(value)
     if (selectedSampleId) setSelectedSampleId(null)
-    if (notice) setNotice('')
+    if (submittedMessage !== null) setSubmittedMessage(null)
   }
 
-  // "Explain this message": for this milestone we only have fixed example
-  // results for the three sample messages, in the two declared languages at
-  // the three levels. We never invent a result for arbitrary pasted text.
+  // "Explain this message": hand the text to the processing service. The
+  // service decides what can and cannot be explained — the UI does not invent
+  // results of its own.
   function handleExplain() {
-    const trimmed = text.trim()
-    if (trimmed.length === 0) {
-      setNotice('Please choose an example or paste a message first.')
-      return
-    }
-    if (text.length > MAX_LENGTH) {
-      setNotice('This message is too long. Please shorten it and try again.')
-      return
-    }
-
-    const sample = sampleNotifications.find((item) => item.id === selectedSampleId)
-    if (!sample) {
-      setResultSampleId(null)
-      setNotice(
-        'Example explanations are available for the three example messages above. ' +
-          'Explaining your own messages is coming in a later version.',
-      )
-      return
-    }
-
-    setNotice('')
-    setResultSampleId(sample.id)
+    setSubmittedMessage(text)
     setIsOriginalOpen(false)
   }
 
-  // Derive the currently shown sample and its result for the active settings.
-  const resultSample = resultSampleId
-    ? sampleNotifications.find((item) => item.id === resultSampleId)
-    : null
-
-  const result = useMemo(() => {
-    if (!resultSample) return null
-    const byLanguage = resultSample.results[settings.language] ?? resultSample.results.en
-    return byLanguage[settings.level] ?? byLanguage.standard
-  }, [resultSample, settings.language, settings.level])
+  // Run the processor whenever there is a submitted message or the preferences
+  // change, so the shown explanation always reflects the current settings.
+  const response = useMemo(() => {
+    if (submittedMessage === null) return null
+    return processNotification({
+      message: submittedMessage,
+      preferences: { level: settings.level, language: settings.language },
+    })
+  }, [submittedMessage, settings.level, settings.language])
 
   const speechLang =
-    LANGUAGES.find((item) => item.value === settings.language)?.speechLang ?? 'en-US'
+    LANGUAGES.find((item) => item.value === settings.language)?.speechLang ??
+    'en-US'
+
+  const okResult =
+    response && response.status === ProcessStatus.OK ? response.result : null
+  // Any non-OK status carries a plain-language message to show the user.
+  const notice =
+    response && response.status !== ProcessStatus.OK ? response.message : ''
 
   return (
     <main className="dc-app">
@@ -127,10 +111,10 @@ function App() {
         notice={notice}
       />
 
-      {result && resultSample && (
+      {okResult && response && (
         <ResultPanel
-          result={result}
-          original={resultSample.text}
+          result={okResult}
+          original={response.original}
           isOriginalOpen={isOriginalOpen}
           onToggleOriginal={() => setIsOriginalOpen((open) => !open)}
           showReadAloud={settings.readAloud && speechSupported}

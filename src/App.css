@@ -480,3 +480,12 @@
 .dc-readaloud {
   margin-top: 16px;
 }
+
+/* A suggested reply draft. Set apart so it reads as a quotable block. */
+.dc-suggested-reply {
+  border-left: 5px solid var(--dc-accent);
+  background: var(--dc-surface-alt);
+  padding: 14px 16px;
+  border-radius: 6px;
+  margin-top: 10px;
+}
