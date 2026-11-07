@@ -8,3 +8,15 @@ Please do not edit entries by hand. Add notes above this line if needed.
 
 <!-- CHANGELOG:START -->
 <!-- New entries are inserted below this marker, newest first. -->
+### `22b9977` — 2026-11-07 14:52
+
+**Created commit documentation workflow agent**
+
+Changed files:
+
+- `.github/workflows/commit-docs.yml`
+- `.kiro/agents/commit-reviewer.md`
+- `docs/CHANGELOG.md`
+
+Stats: 3 files changed, 202 insertions(+)
+
