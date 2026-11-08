@@ -15,7 +15,9 @@ import { normalizeGuidance } from '../../src/services/guidanceSchema.js'
 // actual step list after any internal reasoning. We also request no thinking
 // (see thinkingConfig below); this larger cap is a safety net.
 export const MAX_OUTPUT_TOKENS = 2048
-export const REQUEST_TIMEOUT_MS = 30000
+// Allow 45s (Vercel Hobby functions may run up to 60s) to avoid spurious
+// timeouts on slow/cold responses, while still bounding the request.
+export const REQUEST_TIMEOUT_MS = 45000
 // ~1.5MB of base64 (roughly ~1.1MB raw image). Keeps requests small/fast.
 export const MAX_IMAGE_BASE64_CHARS = 1_500_000
 export const ALLOWED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp']
@@ -142,10 +144,14 @@ export async function generateGuidance({
       signal: controller.signal,
     })
   } catch (err) {
+    const timedOut = err?.name === 'AbortError'
     const e = new Error(
-      err?.name === 'AbortError' ? 'Guidance request timed out' : 'Guidance request failed',
+      timedOut ? 'Guidance request timed out' : 'Guidance request failed',
     )
     e.code = 'upstream'
+    e.upstreamDetail = timedOut
+      ? `timeout after ${REQUEST_TIMEOUT_MS}ms`
+      : `fetch failed: ${err?.name ?? 'unknown'} ${err?.message ?? ''}`.slice(0, 200)
     throw e
   } finally {
     clearTimeout(timer)

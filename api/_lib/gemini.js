@@ -16,7 +16,10 @@ export const MAX_INPUT_CHARS = 5000
 // the model to skip thinking (see thinkingConfig below); the larger cap is a
 // safety net in case a model ignores that.
 export const MAX_OUTPUT_TOKENS = 2048
-export const REQUEST_TIMEOUT_MS = 30000
+// Gemini 3.x flash can occasionally be slow on a cold start. Vercel Hobby
+// functions may run up to 60s, so we allow 45s before aborting to reduce
+// spurious timeouts, while still bounding the request.
+export const REQUEST_TIMEOUT_MS = 45000
 
 const SUPPORTED_LANGUAGES = { en: 'English', fr: 'French' }
 const SUPPORTED_LEVELS = { brief: 'brief', standard: 'standard', guided: 'guided' }
@@ -133,10 +136,16 @@ export async function generateExplanation({
       signal: controller.signal,
     })
   } catch (err) {
+    const timedOut = err?.name === 'AbortError'
     const error = new Error(
-      err?.name === 'AbortError' ? 'Gemini request timed out' : 'Gemini request failed',
+      timedOut ? 'Gemini request timed out' : 'Gemini request failed',
     )
     error.code = 'upstream'
+    // Record WHICH kind of failure this was, so logs distinguish a timeout
+    // (model too slow / over our 30s budget) from a network error.
+    error.upstreamDetail = timedOut
+      ? `timeout after ${REQUEST_TIMEOUT_MS}ms`
+      : `fetch failed: ${err?.name ?? 'unknown'} ${err?.message ?? ''}`.slice(0, 200)
     throw error
   } finally {
     clearTimeout(timer)
