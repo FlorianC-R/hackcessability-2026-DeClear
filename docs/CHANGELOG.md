@@ -8,6 +8,21 @@ Please do not edit entries by hand. Add notes above this line if needed.
 
 <!-- CHANGELOG:START -->
 <!-- New entries are inserted below this marker, newest first. -->
+### `c80d5ce` — 2026-11-08 01:11
+
+**feat: six title-only example cards (add pharmacy + newsletter, drop card descriptions)**
+
+Changed files:
+
+- `src/App.css`
+- `src/App.test.jsx`
+- `src/components/NotificationInput.jsx`
+- `src/components/SampleCard.jsx`
+- `src/data/sampleLocale.js`
+- `src/data/sampleNotifications.js`
+
+Stats: 6 files changed, 284 insertions(+), 21 deletions(-)
+
 ### `476732d` — 2026-11-08 01:04
 
 **style: inline Explain loading state, teal accent, colour-coded urgency levels**
