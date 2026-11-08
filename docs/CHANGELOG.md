@@ -8,6 +8,16 @@ Please do not edit entries by hand. Add notes above this line if needed.
 
 <!-- CHANGELOG:START -->
 <!-- New entries are inserted below this marker, newest first. -->
+### `43b5bca` — 2026-11-08 10:53
+
+**docs: write full project README**
+
+Changed files:
+
+- `README.md`
+
+Stats: 1 file changed, 165 insertions(+), 9 deletions(-)
+
 ### `5dd00d7` — 2026-11-08 08:12
 
 **copy: update tagline to 'Understand your technology in the clearest words'**
