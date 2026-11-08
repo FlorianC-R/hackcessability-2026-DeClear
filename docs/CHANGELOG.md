@@ -8,6 +8,23 @@ Please do not edit entries by hand. Add notes above this line if needed.
 
 <!-- CHANGELOG:START -->
 <!-- New entries are inserted below this marker, newest first. -->
+### `3d72d9c` — 2026-11-08 00:22
+
+**style: warm theme, brand font, brighter dark mode, reordered message stage, CTA polish**
+
+Changed files:
+
+- `src/App.css`
+- `src/App.jsx`
+- `src/components/NotificationInput.jsx`
+- `src/i18n/en.js`
+- `src/i18n/es.js`
+- `src/i18n/fr.js`
+- `src/i18n/zh-CN.js`
+- `src/index.css`
+
+Stats: 8 files changed, 231 insertions(+), 95 deletions(-)
+
 ### `f4310d8` — 2026-11-07 23:40
 
 **feat: full multilingual UI (en/fr/es/zh-CN) with translated scripted guidance**
