@@ -8,6 +8,25 @@ Please do not edit entries by hand. Add notes above this line if needed.
 
 <!-- CHANGELOG:START -->
 <!-- New entries are inserted below this marker, newest first. -->
+### `23605e7` — 2026-11-07 23:11
+
+**feat: focused three-stage UI (Message/Actions/Guidance) with state preservation and nav tests**
+
+Changed files:
+
+- `package-lock.json`
+- `package.json`
+- `src/App.css`
+- `src/App.jsx`
+- `src/App.test.jsx`
+- `src/components/ActionsStage.jsx`
+- `src/components/ResultPanel.jsx`
+- `src/components/StageProgress.jsx`
+- `src/test/setup.js`
+- `vite.config.js`
+
+Stats: 10 files changed, 1687 insertions(+), 238 deletions(-)
+
 ### `63d4fb3` — 2026-11-07 22:28
 
 **feat: tag AI actions with supported digital tasks so Help me do this shows in AI mode**
