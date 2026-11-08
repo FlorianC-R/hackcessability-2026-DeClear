@@ -76,3 +76,15 @@ export function getScriptedGuide(taskType, device = 'iphone') {
   if (!task) return null
   return task.scripted?.[device] ?? null
 }
+
+// The set of taskType values DeClear can actually guide. Used to validate what
+// the AI returns so it can only tag an action with a task we really support.
+export const GUIDABLE_TASK_TYPES = Object.keys(GUIDANCE_TASKS)
+
+// A compact catalog for the AI prompt: each guidable task's id and label.
+export function guidableTaskCatalog() {
+  return GUIDABLE_TASK_TYPES.map((id) => ({
+    taskType: id,
+    label: GUIDANCE_TASKS[id].label,
+  }))
+}

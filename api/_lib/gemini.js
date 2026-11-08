@@ -6,6 +6,7 @@
 // logged, and never placed in any response or error message.
 
 import { normalizeResult, groundResult } from '../../src/services/resultSchema.js'
+import { guidableTaskCatalog } from '../../src/data/guidanceTasks.js'
 
 // Hard limits (also enforced client-side, re-checked here because the route is
 // public and cannot trust the caller).
@@ -45,13 +46,20 @@ export function buildPrompt({ message, level, language }) {
   const langName = SUPPORTED_LANGUAGES[language] ?? 'English'
   const levelName = SUPPORTED_LEVELS[level] ?? 'standard'
 
+  // The exact tasks DeClear can walk the user through. The model may only tag
+  // an action with one of these taskType values.
+  const catalog = guidableTaskCatalog()
+  const catalogLines = catalog
+    .map((t) => `  - "${t.taskType}": ${t.label}`)
+    .join('\n')
+
   return `You help older adults understand a notification or message. Explain it in ${langName}, at a "${levelName}" level of detail, using short, plain sentences.
 
 Return ONLY a JSON object with these exact fields:
 {
   "title": string,
   "explanation": string,
-  "actions": [{ "id": string, "text": string, "sourceText": string }],
+  "actions": [{ "id": string, "text": string, "sourceText": string, "isDigitalTask": boolean, "taskType": string }],
   "dates": [{ "id": string, "label": string, "dateText": string, "isKnown": boolean, "sourceText": string, "isDerived": boolean }],
   "urgency": "None" | "Low" | "Medium" | "High",
   "uncertainties": [{ "targetKind": "explanation"|"requiredAction"|"importantDate"|"urgency", "targetId": string|null, "label": string }],
@@ -65,6 +73,13 @@ Strict rules:
 - If something is unclear or missing, add an entry to "uncertainties" instead of guessing.
 - If there are no actions or no dates, return empty arrays.
 - Only include "suggestedReply" if a reply is clearly appropriate; otherwise null.
+
+Digital task tagging (for the "actions"):
+- DeClear can give step-by-step help ONLY for these tasks:
+${catalogLines}
+- For each action, decide if completing it means doing one of the tasks above on a phone or computer.
+- If it matches one of the tasks above, set "isDigitalTask": true and "taskType" to that exact id from the list.
+- Otherwise set "isDigitalTask": false and "taskType": "none". Do NOT invent a taskType that is not in the list above.
 
 Message:
 """

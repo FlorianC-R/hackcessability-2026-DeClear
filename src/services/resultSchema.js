@@ -15,6 +15,7 @@
 //                                   as calculations, not direct quotes.
 
 import { URGENCY_LEVELS } from './processorTypes.js'
+import { GUIDABLE_TASK_TYPES } from '../data/guidanceTasks.js'
 
 // --- small helpers ---------------------------------------------------------
 
@@ -54,11 +55,20 @@ export function normalizeResult(raw) {
     throw new Error('Result is missing an explanation')
   }
 
-  const actions = asArray(raw.actions).map((a, i) => ({
-    id: asString(a?.id) || `action-${i + 1}`,
-    text: asString(a?.text).trim(),
-    sourceText: asString(a?.sourceText),
-  }))
+  const actions = asArray(raw.actions).map((a, i) => {
+    // Only trust a taskType that DeClear actually supports. Anything else (an
+    // invented or unknown task) is forced to a plain, non-guidable action so we
+    // never show a "Help me do this" button we cannot honour.
+    const claimedTask = asString(a?.taskType)
+    const isSupported = GUIDABLE_TASK_TYPES.includes(claimedTask)
+    return {
+      id: asString(a?.id) || `action-${i + 1}`,
+      text: asString(a?.text).trim(),
+      sourceText: asString(a?.sourceText),
+      isDigitalTask: a?.isDigitalTask === true && isSupported,
+      taskType: isSupported ? claimedTask : 'none',
+    }
+  })
 
   const dates = asArray(raw.dates).map((d, i) => ({
     id: asString(d?.id) || `date-${i + 1}`,

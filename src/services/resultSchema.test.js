@@ -101,3 +101,48 @@ describe('groundResult — sourceText must appear in the input', () => {
     expect(grounded.dates[0].sourceText).toMatch(/18 November/i)
   })
 })
+
+describe('normalizeResult — digital task tagging', () => {
+  it('keeps a supported taskType and marks the action guidable', () => {
+    const r = normalizeResult({
+      explanation: 'x',
+      actions: [
+        {
+          id: 'a1',
+          text: 'Send photos on WhatsApp',
+          sourceText: '',
+          isDigitalTask: true,
+          taskType: 'send-photos-whatsapp',
+        },
+      ],
+    })
+    expect(r.actions[0].isDigitalTask).toBe(true)
+    expect(r.actions[0].taskType).toBe('send-photos-whatsapp')
+  })
+
+  it('rejects an unsupported/invented taskType (forces plain action)', () => {
+    const r = normalizeResult({
+      explanation: 'x',
+      actions: [
+        {
+          id: 'a1',
+          text: 'Book a flight to Paris',
+          sourceText: '',
+          isDigitalTask: true,
+          taskType: 'book-a-flight', // not something we can guide
+        },
+      ],
+    })
+    expect(r.actions[0].isDigitalTask).toBe(false)
+    expect(r.actions[0].taskType).toBe('none')
+  })
+
+  it('defaults to a plain action when no task fields are present', () => {
+    const r = normalizeResult({
+      explanation: 'x',
+      actions: [{ id: 'a1', text: 'Pay the bill', sourceText: '' }],
+    })
+    expect(r.actions[0].isDigitalTask).toBe(false)
+    expect(r.actions[0].taskType).toBe('none')
+  })
+})
