@@ -8,6 +8,16 @@ Please do not edit entries by hand. Add notes above this line if needed.
 
 <!-- CHANGELOG:START -->
 <!-- New entries are inserted below this marker, newest first. -->
+### `659be60` — 2026-11-08 07:23
+
+**feat: pick the nicest available voice and a gentler delivery for read-aloud**
+
+Changed files:
+
+- `src/platform/speech.js`
+
+Stats: 1 file changed, 82 insertions(+), 1 deletion(-)
+
 ### `ce2b880` — 2026-11-08 01:12
 
 **feat: clicking a selected example again clears the message box**
