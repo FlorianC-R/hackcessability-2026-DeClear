@@ -8,6 +8,17 @@ Please do not edit entries by hand. Add notes above this line if needed.
 
 <!-- CHANGELOG:START -->
 <!-- New entries are inserted below this marker, newest first. -->
+### `ce2b880` — 2026-11-08 01:12
+
+**feat: clicking a selected example again clears the message box**
+
+Changed files:
+
+- `src/App.jsx`
+- `src/App.test.jsx`
+
+Stats: 2 files changed, 23 insertions(+)
+
 ### `c80d5ce` — 2026-11-08 01:11
 
 **feat: six title-only example cards (add pharmacy + newsletter, drop card descriptions)**
