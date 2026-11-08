@@ -134,3 +134,43 @@ describe('App — settings remain accessible across stages', () => {
     ).toBeInTheDocument()
   })
 })
+
+describe('App — language switching translates the whole interface', () => {
+  it('switches the UI to French immediately and sets <html lang>', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    // English to start.
+    expect(
+      screen.getByRole('button', { name: /explain this message/i }),
+    ).toBeInTheDocument()
+
+    // Open settings and choose French.
+    await user.click(screen.getByRole('button', { name: /change settings/i }))
+    await user.click(screen.getByRole('radio', { name: /français/i }))
+
+    // The primary button is now French, with no page reload.
+    expect(
+      screen.getByRole('button', { name: /expliquer ce message/i }),
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: /explain this message/i }),
+    ).toBeNull()
+    // The document language is updated for assistive tech.
+    expect(document.documentElement.lang).toBe('fr-FR')
+  })
+
+  it('switches to Simplified Chinese and sets <html lang>', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: /change settings/i }))
+    await user.click(screen.getByRole('radio', { name: /简体中文/ }))
+
+    expect(document.documentElement.lang).toBe('zh-CN')
+    // A known Chinese UI string is now shown (the Explain button).
+    expect(
+      screen.getByRole('button', { name: /解释这条信息/ }),
+    ).toBeInTheDocument()
+  })
+})

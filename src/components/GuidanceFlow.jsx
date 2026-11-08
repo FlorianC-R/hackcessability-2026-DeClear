@@ -5,21 +5,11 @@ import {
   MAX_IMAGE_BASE64_CHARS,
   fileToInlineImage,
 } from '../platform/image.js'
+import { useTranslation } from '../i18n/context.js'
 
 // GuidanceFlow shows ONE instruction at a time with Next / Back / Repeat aloud
 // / I'm stuck. It is honest that DeClear cannot see or control the user's
 // phone: the user follows the steps themselves.
-//
-// Props:
-//   task            : { label, app, device }
-//   guidance        : { steps: [{id,instruction,detail}], source: 'ai'|'scripted' }
-//   speechLang      : BCP-47 code for read-aloud
-//   canReadAloud    : whether read-aloud is available/enabled
-//   aiConsent       : whether the user consented to AI (gates screenshot upload)
-//   onStuck         : async ({ stuckText, image }) => void  (fetches revised steps)
-//   stuckPending    : boolean
-//   sourceNotice    : optional string explaining a fallback
-//   onClose         : () => void
 function GuidanceFlow({
   task,
   guidance,
@@ -31,6 +21,7 @@ function GuidanceFlow({
   sourceNotice,
   onClose,
 }) {
+  const { t } = useTranslation()
   const [index, setIndex] = useState(0)
   const [stuckOpen, setStuckOpen] = useState(false)
   const [stuckText, setStuckText] = useState('')
@@ -43,10 +34,6 @@ function GuidanceFlow({
   const step = steps[Math.min(index, steps.length - 1)]
   const isFirst = index === 0
   const isLast = index === steps.length - 1
-
-  // When new guidance arrives (e.g. after "I'm stuck"), the parent remounts
-  // this component via a changing `key`, so state resets to step 1 naturally
-  // without a setState-in-effect.
 
   // Stop any speech when the step changes or the flow unmounts.
   useEffect(() => {
@@ -64,25 +51,28 @@ function GuidanceFlow({
     const file = event.target.files?.[0]
     if (!file) return
     if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
-      setImageError('Please choose a PNG, JPEG, or WebP image.')
+      setImageError(t('stuck.image.badType'))
       return
     }
     try {
       const inline = await fileToInlineImage(file)
       if (inline.dataBase64.length > MAX_IMAGE_BASE64_CHARS) {
-        setImageError('That image is too large. Please use one under about 1 MB.')
+        setImageError(t('stuck.image.tooLarge'))
         return
       }
       setImage({ ...inline, name: file.name })
     } catch {
-      setImageError('Sorry, that image could not be read. Please try another.')
+      setImageError(t('stuck.image.unreadable'))
     }
   }
 
   function submitStuck() {
     onStuck({
       stuckText: stuckText.trim(),
-      image: imageConsent && image ? { mimeType: image.mimeType, dataBase64: image.dataBase64 } : null,
+      image:
+        imageConsent && image
+          ? { mimeType: image.mimeType, dataBase64: image.dataBase64 }
+          : null,
     })
   }
 
@@ -91,19 +81,16 @@ function GuidanceFlow({
       <div className="dc-guide__header">
         <h2 id="dc-guide-heading">{task.label}</h2>
         <button type="button" className="dc-secondary-button" onClick={onClose}>
-          Close guide
+          {t('guide.close')}
         </button>
       </div>
 
       <p className="dc-guide__source">
         {guidance.source === 'ai'
-          ? 'These steps were created just now by AI for your situation.'
-          : 'These are DeClear’s written steps (not live AI).'}
+          ? t('guide.source.ai')
+          : t('guide.source.scripted')}
       </p>
-      <p className="dc-help-text">
-        DeClear cannot see or control your phone. Follow these steps yourself on
-        your device. DeClear never sends anything or taps anything for you.
-      </p>
+      <p className="dc-help-text">{t('guide.disclaimer')}</p>
       {sourceNotice && (
         <p className="dc-notice" role="status">
           {sourceNotice}
@@ -111,7 +98,7 @@ function GuidanceFlow({
       )}
 
       <p className="dc-guide__progress" aria-live="polite">
-        Step {index + 1} of {steps.length}
+        {t('guide.stepCount', { current: index + 1, total: steps.length })}
       </p>
 
       <div className="dc-guide__step">
@@ -126,7 +113,7 @@ function GuidanceFlow({
           onClick={() => setIndex((i) => Math.max(0, i - 1))}
           disabled={isFirst}
         >
-          Back
+          {t('guide.back')}
         </button>
         {canReadAloud && (
           <button
@@ -134,7 +121,7 @@ function GuidanceFlow({
             className="dc-secondary-button"
             onClick={readCurrentStep}
           >
-            Repeat aloud
+            {t('guide.repeat')}
           </button>
         )}
         <button
@@ -143,15 +130,11 @@ function GuidanceFlow({
           onClick={() => setIndex((i) => Math.min(steps.length - 1, i + 1))}
           disabled={isLast}
         >
-          Next
+          {t('guide.next')}
         </button>
       </div>
 
-      {isLast && (
-        <p className="dc-guide__done">
-          That is the last step. Well done! You can go Back to review any step.
-        </p>
-      )}
+      {isLast && <p className="dc-guide__done">{t('guide.done')}</p>}
 
       <div className="dc-guide__stuck">
         <button
@@ -161,13 +144,13 @@ function GuidanceFlow({
           aria-controls="dc-stuck-panel"
           onClick={() => setStuckOpen((open) => !open)}
         >
-          I&rsquo;m stuck
+          {t('stuck.open')}
         </button>
 
         {stuckOpen && (
           <div id="dc-stuck-panel" className="dc-stuck-panel">
             <label className="dc-label" htmlFor="dc-stuck-text">
-              Tell DeClear what you see on your screen, and it will try again.
+              {t('stuck.prompt')}
             </label>
             <textarea
               id="dc-stuck-text"
@@ -175,17 +158,15 @@ function GuidanceFlow({
               rows={3}
               value={stuckText}
               onChange={(e) => setStuckText(e.target.value)}
-              placeholder="For example: I see a list of chats but no + button."
+              placeholder={t('stuck.placeholder')}
             />
 
             {aiConsent ? (
               <fieldset className="dc-fieldset">
-                <legend className="dc-legend">Optional: add a screenshot</legend>
-                <p className="dc-help-text">
-                  You can add a picture of your screen to get more exact help.
-                  The picture is sent to the AI for this one answer only and is
-                  <strong> not stored</strong> by DeClear.
-                </p>
+                <legend className="dc-legend">
+                  {t('stuck.screenshot.legend')}
+                </legend>
+                <p className="dc-help-text">{t('stuck.screenshot.note')}</p>
                 <label className="dc-choice">
                   <input
                     type="checkbox"
@@ -197,7 +178,7 @@ function GuidanceFlow({
                   />
                   <span className="dc-choice__text">
                     <span className="dc-choice__label">
-                      I agree to send a screenshot to the AI for this answer
+                      {t('stuck.screenshot.consent')}
                     </span>
                   </span>
                 </label>
@@ -209,7 +190,7 @@ function GuidanceFlow({
                       className="dc-secondary-button"
                       onClick={() => fileInputRef.current?.click()}
                     >
-                      Choose a screenshot
+                      {t('stuck.screenshot.choose')}
                     </button>
                     <input
                       ref={fileInputRef}
@@ -218,7 +199,11 @@ function GuidanceFlow({
                       className="dc-visually-hidden"
                       onChange={handleImageChosen}
                     />
-                    {image && <p className="dc-help-text">Selected: {image.name}</p>}
+                    {image && (
+                      <p className="dc-help-text">
+                        {t('stuck.screenshot.selected', { name: image.name })}
+                      </p>
+                    )}
                     {imageError && (
                       <p className="dc-uncertainty" role="alert">
                         {imageError}
@@ -228,10 +213,7 @@ function GuidanceFlow({
                 )}
               </fieldset>
             ) : (
-              <p className="dc-help-text">
-                Turn on AI mode and consent to also send a screenshot. Without
-                that, DeClear will use your written description only.
-              </p>
+              <p className="dc-help-text">{t('stuck.screenshot.noConsent')}</p>
             )}
 
             <button
@@ -240,7 +222,7 @@ function GuidanceFlow({
               onClick={submitStuck}
               disabled={stuckPending || (stuckText.length === 0 && !image)}
             >
-              {stuckPending ? 'Getting new steps…' : 'Help me with this'}
+              {stuckPending ? t('stuck.submitting') : t('stuck.submit')}
             </button>
           </div>
         )}

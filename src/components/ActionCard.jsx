@@ -2,8 +2,10 @@
 // a digital task DeClear can guide (e.g. sending photos on WhatsApp), it offers
 // a "Help me do this" button that opens the step-by-step guide.
 import { GUIDANCE_TASKS, TASK_TYPES } from '../data/guidanceTasks.js'
+import { useTranslation } from '../i18n/context.js'
 
 function ActionCard({ action, onStartGuide, uncertaintyLabel }) {
+  const { t } = useTranslation()
   const taskType = action.taskType ?? TASK_TYPES.NONE
   const isGuidable =
     action.isDigitalTask === true && Boolean(GUIDANCE_TASKS[taskType])
@@ -13,7 +15,9 @@ function ActionCard({ action, onStartGuide, uncertaintyLabel }) {
       <p className="dc-action-card__text">{action.text}</p>
 
       {uncertaintyLabel && (
-        <p className="dc-uncertainty">Please check: {uncertaintyLabel}</p>
+        <p className="dc-uncertainty">
+          {t('result.checkPrefix', { label: uncertaintyLabel })}
+        </p>
       )}
 
       {isGuidable ? (
@@ -22,13 +26,11 @@ function ActionCard({ action, onStartGuide, uncertaintyLabel }) {
           className="dc-primary-button dc-action-card__help"
           onClick={() => onStartGuide(action)}
         >
-          Help me do this
+          {t('action.help')}
         </button>
       ) : (
         action.isDigitalTask === true && (
-          <p className="dc-help-text">
-            A step-by-step guide for this task is not available yet.
-          </p>
+          <p className="dc-help-text">{t('action.noGuide')}</p>
         )
       )}
     </li>

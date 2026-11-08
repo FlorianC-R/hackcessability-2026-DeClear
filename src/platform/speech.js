@@ -41,3 +41,21 @@ export function stopSpeaking() {
     // Ignore — stopping is best-effort.
   }
 }
+
+// Whether the browser has a voice whose language matches `speechLang` (e.g.
+// 'fr-FR' matches a 'fr' or 'fr-FR' voice). Voices load asynchronously, so an
+// empty list is treated as "unknown" (true) rather than "missing", to avoid a
+// false warning before voices are ready.
+export function hasVoiceFor(speechLang) {
+  if (!isSpeechSupported() || !speechLang) return true
+  try {
+    const voices = window.speechSynthesis.getVoices()
+    if (!voices || voices.length === 0) return true // not loaded yet
+    const base = speechLang.toLowerCase().split('-')[0]
+    return voices.some((v) =>
+      (v.lang ?? '').toLowerCase().split('-')[0] === base,
+    )
+  } catch {
+    return true
+  }
+}

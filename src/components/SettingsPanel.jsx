@@ -1,16 +1,25 @@
-import {
-  EXPLANATION_LEVELS,
-  LANGUAGES,
-  PROCESSING_MODES,
-} from '../data/settingsOptions.js'
+import { useTranslation } from '../i18n/context.js'
+import { SUPPORTED_LANGUAGES } from '../i18n/index.js'
 
-// SettingsPanel lets the user personalize DeClear: how detailed explanations
-// are, which language the output uses, and whether a read-aloud button is
-// offered. It is a controlled component — the parent owns the settings and
-// saves them.
+// SettingsPanel lets the user personalize DeClear: processing mode, AI consent,
+// explanation level, interface language, and read-aloud. It is a controlled
+// component — the parent owns the settings and saves them. Changing the
+// language updates the whole interface immediately (the parent re-renders under
+// a new LanguageProvider value).
 //
-// `speechSupported` is passed in so we can explain plainly when read-aloud is
-// not available in the current browser, instead of offering a dead control.
+// Option labels/descriptions come from translation keys, so every control is
+// localized, not just free text.
+const MODE_OPTIONS = [
+  { value: 'demo', labelKey: 'settings.mode.demo.label', descKey: 'settings.mode.demo.desc' },
+  { value: 'ai', labelKey: 'settings.mode.ai.label', descKey: 'settings.mode.ai.desc' },
+]
+
+const LEVEL_OPTIONS = [
+  { value: 'brief', labelKey: 'settings.level.brief.label', descKey: 'settings.level.brief.desc' },
+  { value: 'standard', labelKey: 'settings.level.standard.label', descKey: 'settings.level.standard.desc' },
+  { value: 'guided', labelKey: 'settings.level.guided.label', descKey: 'settings.level.guided.desc' },
+]
+
 function SettingsPanel({
   settings,
   onChange,
@@ -19,6 +28,8 @@ function SettingsPanel({
   speechSupported,
   saveFailed,
 }) {
+  const { t } = useTranslation()
+
   function update(partial) {
     onChange({ ...settings, ...partial })
   }
@@ -32,25 +43,44 @@ function SettingsPanel({
         aria-controls="dc-settings-body"
         onClick={onToggle}
       >
-        {isOpen ? 'Hide settings' : 'Change settings'}
+        {isOpen ? t('settings.hide') : t('settings.show')}
       </button>
 
       <h2 id="dc-settings-heading" className="dc-visually-hidden">
-        Settings
+        {t('settings.heading')}
       </h2>
 
       {isOpen && (
         <div id="dc-settings-body" className="dc-settings__body">
           {saveFailed && (
             <p className="dc-notice" role="alert">
-              Your settings could not be saved in this browser, so they may not
-              be remembered next time. They still apply right now.
+              {t('settings.saveFailed')}
             </p>
           )}
 
+          {/* Language first: changing it re-localizes everything below. */}
           <fieldset className="dc-fieldset">
-            <legend className="dc-legend">How should DeClear explain messages?</legend>
-            {PROCESSING_MODES.map((option) => (
+            <legend className="dc-legend">{t('settings.language.legend')}</legend>
+            {SUPPORTED_LANGUAGES.map((code) => (
+              <label key={code} className="dc-choice">
+                <input
+                  type="radio"
+                  name="dc-language"
+                  value={code}
+                  checked={settings.language === code}
+                  onChange={() => update({ language: code })}
+                />
+                <span className="dc-choice__text">
+                  <span className="dc-choice__label">{t(`language.${code}`)}</span>
+                </span>
+              </label>
+            ))}
+            <p className="dc-help-text">{t('settings.language.help')}</p>
+          </fieldset>
+
+          <fieldset className="dc-fieldset">
+            <legend className="dc-legend">{t('settings.mode.legend')}</legend>
+            {MODE_OPTIONS.map((option) => (
               <label key={option.value} className="dc-choice">
                 <input
                   type="radio"
@@ -60,8 +90,8 @@ function SettingsPanel({
                   onChange={() => update({ mode: option.value })}
                 />
                 <span className="dc-choice__text">
-                  <span className="dc-choice__label">{option.label}</span>
-                  <span className="dc-choice__desc">{option.description}</span>
+                  <span className="dc-choice__label">{t(option.labelKey)}</span>
+                  <span className="dc-choice__desc">{t(option.descKey)}</span>
                 </span>
               </label>
             ))}
@@ -69,18 +99,8 @@ function SettingsPanel({
 
           {settings.mode === 'ai' && (
             <fieldset className="dc-fieldset">
-              <legend className="dc-legend">
-                Consent to use AI (Google Gemini)
-              </legend>
-              <p className="dc-help-text">
-                In AI mode, the message you choose to explain is sent over the
-                internet to Google&rsquo;s Gemini service to be processed.
-                DeClear uses Google&rsquo;s <strong>free tier</strong>. Outside
-                the EEA, UK, and Switzerland, Google may use free-tier content to
-                improve its products, and such content may be reviewed by people.
-                Do not send anything you want to keep private. You can switch
-                back to Demo mode at any time; Demo mode sends nothing.
-              </p>
+              <legend className="dc-legend">{t('settings.consent.legend')}</legend>
+              <p className="dc-help-text">{t('settings.consent.notice')}</p>
               <label className="dc-choice">
                 <input
                   type="checkbox"
@@ -92,10 +112,10 @@ function SettingsPanel({
                 />
                 <span className="dc-choice__text">
                   <span className="dc-choice__label">
-                    I understand and agree to send my message to Google Gemini
+                    {t('settings.consent.checkbox')}
                   </span>
                   <span className="dc-choice__desc">
-                    AI explanations stay turned off until you check this box.
+                    {t('settings.consent.checkboxDesc')}
                   </span>
                 </span>
               </label>
@@ -103,8 +123,8 @@ function SettingsPanel({
           )}
 
           <fieldset className="dc-fieldset">
-            <legend className="dc-legend">How detailed should explanations be?</legend>
-            {EXPLANATION_LEVELS.map((option) => (
+            <legend className="dc-legend">{t('settings.level.legend')}</legend>
+            {LEVEL_OPTIONS.map((option) => (
               <label key={option.value} className="dc-choice">
                 <input
                   type="radio"
@@ -114,38 +134,15 @@ function SettingsPanel({
                   onChange={() => update({ level: option.value })}
                 />
                 <span className="dc-choice__text">
-                  <span className="dc-choice__label">{option.label}</span>
-                  <span className="dc-choice__desc">{option.description}</span>
+                  <span className="dc-choice__label">{t(option.labelKey)}</span>
+                  <span className="dc-choice__desc">{t(option.descKey)}</span>
                 </span>
               </label>
             ))}
           </fieldset>
 
           <fieldset className="dc-fieldset">
-            <legend className="dc-legend">Which language should the explanation use?</legend>
-            {LANGUAGES.map((option) => (
-              <label key={option.value} className="dc-choice">
-                <input
-                  type="radio"
-                  name="dc-language"
-                  value={option.value}
-                  checked={settings.language === option.value}
-                  onChange={() => update({ language: option.value })}
-                />
-                <span className="dc-choice__text">
-                  <span className="dc-choice__label">{option.label}</span>
-                </span>
-              </label>
-            ))}
-            <p className="dc-help-text">
-              English and French are supported. In Demo mode this applies to the
-              example messages; in AI mode the explanation of your own message is
-              produced in the language you choose here.
-            </p>
-          </fieldset>
-
-          <fieldset className="dc-fieldset">
-            <legend className="dc-legend">Read explanations aloud?</legend>
+            <legend className="dc-legend">{t('settings.readAloud.legend')}</legend>
             <label className="dc-choice">
               <input
                 type="checkbox"
@@ -156,12 +153,12 @@ function SettingsPanel({
               />
               <span className="dc-choice__text">
                 <span className="dc-choice__label">
-                  Show a &ldquo;Read aloud&rdquo; button with each explanation
+                  {t('settings.readAloud.label')}
                 </span>
                 <span className="dc-choice__desc">
                   {speechSupported
-                    ? 'Uses your browser’s built-in voice. Nothing is sent anywhere.'
-                    : 'Your browser does not support reading aloud, so this option is turned off.'}
+                    ? t('settings.readAloud.descOn')
+                    : t('settings.readAloud.descOff')}
                 </span>
               </span>
             </label>

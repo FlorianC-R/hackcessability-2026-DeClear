@@ -1,5 +1,5 @@
 import { describe, it, expect, afterEach, vi } from 'vitest'
-import { getGuidance, GuidanceStatus } from './guidanceService.js'
+import { getGuidance, GuidanceStatus, GuidanceNotice } from './guidanceService.js'
 import { TASK_TYPES } from '../data/guidanceTasks.js'
 
 const WHATSAPP = TASK_TYPES.SEND_PHOTOS_WHATSAPP
@@ -68,7 +68,7 @@ describe('getGuidance — with consent', () => {
     })
     expect(out.status).toBe(GuidanceStatus.OK)
     expect(out.guidance.source).toBe('scripted')
-    expect(out.message).toMatch(/written steps/i)
+    expect(out.notice).toBe(GuidanceNotice.SCRIPTED_FALLBACK)
   })
 
   it('falls back to scripted steps when the network throws', async () => {

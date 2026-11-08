@@ -67,6 +67,8 @@ export default async function handler(req, res) {
   const taskLabel = typeof body.taskLabel === 'string' ? body.taskLabel.slice(0, 200) : ''
   const app = typeof body.app === 'string' ? body.app.slice(0, 80) : ''
   const device = body.device === 'android' ? 'android' : 'iphone'
+  const ALLOWED_LANGUAGES = new Set(['en', 'fr', 'es', 'zh-CN'])
+  const language = ALLOWED_LANGUAGES.has(body.language) ? body.language : 'en'
   const stuckText =
     typeof body.stuckText === 'string' ? body.stuckText.slice(0, MAX_STUCK_CHARS) : ''
 
@@ -99,6 +101,7 @@ export default async function handler(req, res) {
       taskLabel,
       app,
       device,
+      language,
       stuckText,
       image,
       apiKey,

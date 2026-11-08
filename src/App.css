@@ -776,3 +776,29 @@
 .dc-disclosure__body {
   padding-bottom: 14px;
 }
+
+/* ---------- Multilingual overflow safety ----------
+   French and Spanish labels are often longer than English, and Chinese can be
+   denser. Allow button and card text to wrap instead of overflowing, and keep
+   long unbroken words from forcing horizontal scroll. */
+.dc-primary-button,
+.dc-secondary-button {
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+  line-height: 1.3;
+  height: auto;
+}
+
+.dc-progress__steps {
+  flex-wrap: wrap;
+}
+
+.dc-sample-card__title,
+.dc-sample-card__summary,
+.dc-choice__label,
+.dc-choice__desc,
+.dc-guide__instruction,
+.dc-action-card__text {
+  overflow-wrap: break-word;
+}

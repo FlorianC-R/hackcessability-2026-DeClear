@@ -1,18 +1,22 @@
 import { useEffect, useState } from 'react'
-import { speak, stopSpeaking } from '../platform/speech.js'
+import { speak, stopSpeaking, hasVoiceFor } from '../platform/speech.js'
+import { useTranslation } from '../i18n/context.js'
 
 // A single button that reads the given text aloud, and switches to a "Stop"
 // label while speaking. It is only rendered by the parent when the read-aloud
-// setting is on and the browser supports speech.
+// setting is on and the browser supports speech. If no voice is installed for
+// the current language, it says so gracefully rather than failing silently.
 function ReadAloudControl({ text, speechLang }) {
+  const { t } = useTranslation()
   const [isSpeaking, setIsSpeaking] = useState(false)
   const [failed, setFailed] = useState(false)
 
-  // If the text or language changes (new explanation), stop any current
-  // speech so we never read stale content.
+  // If the text or language changes (new explanation), stop any current speech.
   useEffect(() => {
     return () => stopSpeaking()
   }, [text, speechLang])
+
+  const noVoice = !hasVoiceFor(speechLang)
 
   function handleClick() {
     if (isSpeaking) {
@@ -38,11 +42,16 @@ function ReadAloudControl({ text, speechLang }) {
         className="dc-secondary-button"
         onClick={handleClick}
       >
-        {isSpeaking ? 'Stop reading' : 'Read this aloud'}
+        {isSpeaking ? t('readaloud.stop') : t('readaloud.play')}
       </button>
+      {noVoice && !failed && (
+        <p className="dc-help-text" role="status">
+          {t('readaloud.noVoice')}
+        </p>
+      )}
       {failed && (
         <p className="dc-help-text" role="alert">
-          Sorry, reading aloud is not working in this browser right now.
+          {t('readaloud.unavailable')}
         </p>
       )}
     </div>

@@ -21,11 +21,14 @@ export const EXPLANATION_LEVELS = [
   },
 ]
 
-// Output language. Only English and French are declared for this milestone,
-// and only for the predefined sample messages.
+// Interface + output languages. The human-readable labels live in the i18n
+// dictionaries (language.* keys); here we just keep the value and the BCP-47
+// speech tag used for read-aloud and Intl.
 export const LANGUAGES = [
-  { value: 'en', label: 'English', speechLang: 'en-US' },
-  { value: 'fr', label: 'French (Français)', speechLang: 'fr-FR' },
+  { value: 'en', speechLang: 'en-US' },
+  { value: 'fr', speechLang: 'fr-FR' },
+  { value: 'es', speechLang: 'es-ES' },
+  { value: 'zh-CN', speechLang: 'zh-CN' },
 ]
 
 // Processing mode. Demo is deterministic and offline (the three samples). AI

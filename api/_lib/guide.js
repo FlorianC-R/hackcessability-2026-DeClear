@@ -33,9 +33,19 @@ function isRetryable(error) {
 export const MAX_IMAGE_BASE64_CHARS = 1_500_000
 export const ALLOWED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp']
 
-function buildPrompt({ taskLabel, app, device, stuckText, hasImage }) {
+const LANGUAGE_NAMES = {
+  en: 'English',
+  fr: 'French',
+  es: 'Spanish',
+  'zh-CN': 'Simplified Chinese',
+}
+
+function buildPrompt({ taskLabel, app, device, language, stuckText, hasImage }) {
   const deviceName = device === 'android' ? 'an Android phone' : 'an iPhone'
+  const langName = LANGUAGE_NAMES[language] ?? 'English'
   return `You are helping an older adult complete ONE digital task on their own phone: "${taskLabel}" using the ${app} app on ${deviceName}.
+
+Write ALL "instruction" and "detail" text in ${langName}, using natural, respectful wording an older adult would find clear. Do not translate app button names that appear in quotes if the app shows them in English on the user's phone; you may add a short ${langName} explanation after them.
 
 You cannot see or control their phone. Give instructions they follow by hand. Never claim to do anything for them.
 
@@ -99,6 +109,7 @@ export async function generateGuidance({
   taskLabel,
   app,
   device,
+  language = 'en',
   stuckText = '',
   image = null,
   apiKey,
@@ -106,7 +117,16 @@ export async function generateGuidance({
   fetchImpl = fetch,
 }) {
   const parts = [
-    { text: buildPrompt({ taskLabel, app, device, stuckText, hasImage: !!image }) },
+    {
+      text: buildPrompt({
+        taskLabel,
+        app,
+        device,
+        language,
+        stuckText,
+        hasImage: !!image,
+      }),
+    },
   ]
 
   if (image) {

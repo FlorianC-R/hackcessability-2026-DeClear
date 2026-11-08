@@ -6,8 +6,15 @@
 //   - 'ai'       : generated live by Gemini for the user's situation
 //   - 'scripted' : the hand-written fallback from guidanceTasks.js
 // so the UI can tell the user honestly where the steps came from.
+//
+// It also returns a `notice` CODE (not UI text) for non-OK / fallback cases, so
+// the component can translate it into the active language.
 
-import { GUIDANCE_TASKS, getScriptedGuide } from '../data/guidanceTasks.js'
+import {
+  GUIDANCE_TASKS,
+  getScriptedGuide,
+  taskLabel,
+} from '../data/guidanceTasks.js'
 import { normalizeGuidance } from './guidanceSchema.js'
 
 export const GuidanceStatus = {
@@ -17,9 +24,15 @@ export const GuidanceStatus = {
   ERROR: 'error',
 }
 
-// Build a scripted result, or null if we have no script for this task/device.
-function scriptedResult(taskType, device) {
-  const steps = getScriptedGuide(taskType, device)
+// Notice codes the UI translates (see 'guide.notice.*' / 'error.*' keys).
+export const GuidanceNotice = {
+  NONE: null,
+  SCRIPTED_FALLBACK: 'scripted-fallback',
+  UNAVAILABLE: 'unavailable',
+}
+
+function scriptedResult(taskType, device, language) {
+  const steps = getScriptedGuide(taskType, device, language)
   if (!steps) return null
   return normalizeGuidance({ steps }, 'scripted')
 }
@@ -31,14 +44,16 @@ function scriptedResult(taskType, device) {
  * @param {object} args
  * @param {string} args.taskType
  * @param {string} args.device - 'iphone' | 'android'
+ * @param {string} args.language - 'en' | 'fr' | 'es' | 'zh-CN'
  * @param {object} args.preferences - { aiConsent }
  * @param {string} [args.stuckText]
  * @param {{ mimeType, dataBase64 } | null} [args.image]
- * @returns {Promise<{ status, guidance|null, message|null }>}
+ * @returns {Promise<{ status, guidance|null, notice }>}
  */
 export async function getGuidance({
   taskType,
   device,
+  language = 'en',
   preferences,
   stuckText = '',
   image = null,
@@ -48,34 +63,35 @@ export async function getGuidance({
     return {
       status: GuidanceStatus.UNKNOWN_TASK,
       guidance: null,
-      message: 'DeClear does not have a guide for this task yet.',
+      notice: GuidanceNotice.UNAVAILABLE,
     }
   }
 
-  const scripted = scriptedResult(taskType, device)
+  const scripted = scriptedResult(taskType, device, language)
 
   // Without consent we never send anything. Use the scripted guide if present.
   if (!preferences?.aiConsent) {
     if (scripted) {
-      return { status: GuidanceStatus.OK, guidance: scripted, message: null }
+      return { status: GuidanceStatus.OK, guidance: scripted, notice: GuidanceNotice.NONE }
     }
     return {
       status: GuidanceStatus.CONSENT_REQUIRED,
       guidance: null,
-      message:
-        'Turn on AI mode and give consent to get step-by-step help for this task.',
+      notice: GuidanceNotice.UNAVAILABLE,
     }
   }
 
-  // Consent given: try live AI, fall back to scripted on any failure.
+  // Consent given: try live AI (in the selected language), fall back to
+  // scripted on any failure.
   try {
     const response = await fetch('/api/guide', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        taskLabel: task.label,
+        taskLabel: taskLabel(taskType, language),
         app: task.app,
         device,
+        language,
         stuckText,
         image,
       }),
@@ -84,7 +100,7 @@ export async function getGuidance({
     if (response.ok) {
       const payload = await response.json()
       const guidance = normalizeGuidance(payload?.guidance, 'ai')
-      return { status: GuidanceStatus.OK, guidance, message: null }
+      return { status: GuidanceStatus.OK, guidance, notice: GuidanceNotice.NONE }
     }
     // Non-OK: fall through to scripted below.
   } catch {
@@ -95,16 +111,15 @@ export async function getGuidance({
     return {
       status: GuidanceStatus.OK,
       guidance: scripted,
-      message:
-        'Live AI help was not available, so these are DeClear’s written steps instead.',
+      notice: GuidanceNotice.SCRIPTED_FALLBACK,
     }
   }
 
   return {
     status: GuidanceStatus.ERROR,
     guidance: null,
-    message: 'Sorry, step-by-step help is not available right now.',
+    notice: GuidanceNotice.UNAVAILABLE,
   }
 }
 
-export default { getGuidance, GuidanceStatus }
+export default { getGuidance, GuidanceStatus, GuidanceNotice }

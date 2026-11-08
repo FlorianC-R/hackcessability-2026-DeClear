@@ -1,13 +1,15 @@
+import { useTranslation } from '../i18n/context.js'
+
 // Shows the original message exactly as it was provided, with no changes to
 // spacing or wording. This keeps the source document always available so the
-// user can check the plain-language explanation against it.
-//
-// The parent controls whether this is open via `isOpen`/`onToggle`.
+// user can check the plain-language explanation against it. The source text is
+// never translated — only the surrounding controls are.
 function OriginalMessage({ original, isOpen, onToggle }) {
+  const { t } = useTranslation()
   return (
     <section className="dc-original" aria-labelledby="dc-original-heading">
       <h2 id="dc-original-heading" className="dc-visually-hidden">
-        Original message
+        {t('original.heading')}
       </h2>
       <button
         type="button"
@@ -16,7 +18,7 @@ function OriginalMessage({ original, isOpen, onToggle }) {
         aria-controls="dc-original-text"
         onClick={onToggle}
       >
-        {isOpen ? 'Hide the original message' : 'Show the original message'}
+        {isOpen ? t('original.hide') : t('original.show')}
       </button>
 
       {isOpen && (
@@ -24,7 +26,7 @@ function OriginalMessage({ original, isOpen, onToggle }) {
           {original ? (
             <pre className="dc-original__pre">{original}</pre>
           ) : (
-            <p className="dc-empty">No original message is available.</p>
+            <p className="dc-empty">{t('original.none')}</p>
           )}
         </div>
       )}

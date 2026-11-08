@@ -1,8 +1,11 @@
+import { useTranslation } from '../i18n/context.js'
+
 // A single selectable sample notification, shown as a large button.
 // The selected state is communicated with text ("Selected") and a checkmark
 // shape in addition to the border/colour, so meaning never relies on colour
-// alone.
-function SampleCard({ sample, selected, onSelect }) {
+// alone. `title`/`summary` are already localized by the caller.
+function SampleCard({ sample, title, summary, selected, onSelect }) {
+  const { t } = useTranslation()
   return (
     <button
       type="button"
@@ -10,10 +13,10 @@ function SampleCard({ sample, selected, onSelect }) {
       aria-pressed={selected}
       onClick={() => onSelect(sample.id)}
     >
-      <span className="dc-sample-card__title">{sample.title}</span>
-      <span className="dc-sample-card__summary">{sample.summary}</span>
+      <span className="dc-sample-card__title">{title}</span>
+      <span className="dc-sample-card__summary">{summary}</span>
       <span className="dc-sample-card__state">
-        {selected ? '\u2713 Selected' : 'Choose this example'}
+        {selected ? t('sample.selected') : t('sample.choose')}
       </span>
     </button>
   )
