@@ -8,6 +8,46 @@ Please do not edit entries by hand. Add notes above this line if needed.
 
 <!-- CHANGELOG:START -->
 <!-- New entries are inserted below this marker, newest first. -->
+### `f4310d8` — 2026-11-07 23:40
+
+**feat: full multilingual UI (en/fr/es/zh-CN) with translated scripted guidance**
+
+Changed files:
+
+- `api/_lib/guide.js`
+- `api/guide.js`
+- `src/App.css`
+- `src/App.jsx`
+- `src/App.test.jsx`
+- `src/components/ActionCard.jsx`
+- `src/components/ActionsStage.jsx`
+- `src/components/AppHeader.jsx`
+- `src/components/GuidanceFlow.jsx`
+- `src/components/NotificationInput.jsx`
+- `src/components/OriginalMessage.jsx`
+- `src/components/ReadAloudControl.jsx`
+- `src/components/SampleCard.jsx`
+- `src/components/SettingsPanel.jsx`
+- `src/components/StageProgress.jsx`
+- `src/data/guidanceTasks.js`
+- `src/data/sampleLocale.js`
+- `src/data/settingsOptions.js`
+- `src/i18n/LanguageContext.jsx`
+- `src/i18n/context.js`
+- `src/i18n/en.js`
+- `src/i18n/es.js`
+- `src/i18n/fr.js`
+- `src/i18n/i18n.test.js`
+- `src/i18n/index.js`
+- `src/i18n/zh-CN.js`
+- `src/index.css`
+- `src/platform/speech.js`
+- `src/services/guidanceService.js`
+- `src/services/guidanceService.test.js`
+- `src/storage/settingsStorage.test.js`
+
+Stats: 31 files changed, 1624 insertions(+), 306 deletions(-)
+
 ### `23605e7` — 2026-11-07 23:11
 
 **feat: focused three-stage UI (Message/Actions/Guidance) with state preservation and nav tests**
