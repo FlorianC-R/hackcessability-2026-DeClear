@@ -657,3 +657,122 @@
   outline: 3px solid var(--dc-focus);
   outline-offset: 3px;
 }
+
+/* ---------- Stages & progress ---------- */
+.dc-stage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--dc-gap);
+}
+
+.dc-stage__topnav {
+  display: flex;
+}
+
+.dc-stage__nav {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+/* Three-step progress indicator. Meaning is carried by text + shape, not
+   colour alone. */
+.dc-progress {
+  border: 2px solid var(--dc-line);
+  border-radius: var(--dc-radius);
+  padding: 14px 18px;
+  background: var(--dc-surface);
+}
+
+.dc-progress__count {
+  margin: 0 0 8px;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--dc-ink-soft);
+}
+
+.dc-progress__steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.dc-progress__step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+  color: var(--dc-ink-soft);
+}
+
+.dc-progress__step.is-current {
+  font-weight: 700;
+  color: var(--dc-ink);
+}
+
+.dc-progress__step.is-done {
+  color: var(--dc-accent);
+}
+
+.dc-progress__symbol {
+  font-size: 15px;
+}
+
+/* ---------- Actions stage layout ---------- */
+.dc-actions-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dc-actions-stage__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+}
+
+.dc-actions-stage__primary,
+.dc-actions-stage__secondary {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+}
+
+/* Two columns only on wider screens, and only on this stage, so the action
+   cards stay dominant while the source/explanation sit alongside. */
+@media (min-width: 900px) {
+  .dc-actions-stage__grid {
+    grid-template-columns: 1.3fr 1fr;
+    align-items: start;
+  }
+}
+
+/* ---------- Disclosures (nonessential detail) ---------- */
+.dc-disclosure {
+  border: 2px solid var(--dc-line);
+  border-radius: var(--dc-radius);
+  background: var(--dc-surface);
+  padding: 4px 16px;
+}
+
+.dc-disclosure__summary {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--dc-accent);
+  cursor: pointer;
+  padding: 12px 0;
+  list-style: revert;
+}
+
+.dc-disclosure__summary:focus-visible {
+  outline: 3px solid var(--dc-focus);
+  outline-offset: 3px;
+}
+
+.dc-disclosure__body {
+  padding-bottom: 14px;
+}
