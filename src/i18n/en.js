@@ -8,7 +8,7 @@
 export default {
   // Header
   'app.brand': 'DeClear',
-  'app.tagline': 'Understand your technology in plain words',
+  'app.tagline': 'Understand your technology in the clearest words',
 
   // Stage progress
   'progress.count': 'Step {current} of {total}',

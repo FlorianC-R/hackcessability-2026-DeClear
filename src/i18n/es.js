@@ -3,7 +3,7 @@
 
 export default {
   'app.brand': 'DeClear',
-  'app.tagline': 'Entienda su tecnología en palabras sencillas',
+  'app.tagline': 'Entienda su tecnología con las palabras más claras',
 
   'progress.count': 'Paso {current} de {total}',
   'progress.message': 'Mensaje',

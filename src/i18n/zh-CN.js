@@ -3,7 +3,7 @@
 
 export default {
   'app.brand': 'DeClear',
-  'app.tagline': '用简单易懂的话，帮您看懂手机和电脑',
+  'app.tagline': '用最清晰的话，帮您看懂手机和电脑',
 
   'progress.count': '第 {current} 步，共 {total} 步',
   'progress.message': '信息',
