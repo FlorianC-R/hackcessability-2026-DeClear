@@ -8,6 +8,18 @@ Please do not edit entries by hand. Add notes above this line if needed.
 
 <!-- CHANGELOG:START -->
 <!-- New entries are inserted below this marker, newest first. -->
+### `30634b7` — 2026-11-07 22:08
+
+**fix: retry Gemini 503 and timeout with backoff for demo reliability**
+
+Changed files:
+
+- `api/_lib/gemini.js`
+- `api/_lib/gemini.test.js`
+- `api/_lib/guide.js`
+
+Stats: 3 files changed, 240 insertions(+), 124 deletions(-)
+
 ### `5bc51fa` — 2026-11-07 21:44
 
 **fix: raise function timeout, set Vercel maxDuration, and log timeout vs network failures**
