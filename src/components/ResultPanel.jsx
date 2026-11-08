@@ -1,5 +1,6 @@
 import OriginalMessage from './OriginalMessage.jsx'
 import ReadAloudControl from './ReadAloudControl.jsx'
+import ActionCard from './ActionCard.jsx'
 
 // Plain-language descriptions and shapes for each urgency level. Urgency is
 // conveyed by a word plus a shape symbol, never by colour alone.
@@ -28,6 +29,7 @@ function ResultPanel({
   onToggleOriginal,
   showReadAloud,
   speechLang,
+  onStartGuide,
 }) {
   const urgency = URGENCY_DISPLAY[result.urgency] ?? URGENCY_DISPLAY.None
 
@@ -82,7 +84,7 @@ function ResultPanel({
         {result.actions.length === 0 ? (
           <p className="dc-empty">No required actions were found.</p>
         ) : (
-          <ul className="dc-list">
+          <ul className="dc-action-list">
             {result.actions.map((action) => {
               const uncertainty = findUncertainty(
                 result.uncertainties,
@@ -90,14 +92,12 @@ function ResultPanel({
                 action.id,
               )
               return (
-                <li key={action.id} className="dc-list__item">
-                  <span className="dc-action__text">{action.text}</span>
-                  {uncertainty && (
-                    <span className="dc-uncertainty">
-                      Please check: {uncertainty.label}
-                    </span>
-                  )}
-                </li>
+                <ActionCard
+                  key={action.id}
+                  action={action}
+                  uncertaintyLabel={uncertainty?.label}
+                  onStartGuide={onStartGuide}
+                />
               )
             })}
           </ul>

@@ -501,3 +501,159 @@
   background: var(--dc-surface-alt);
   color: var(--dc-ink);
 }
+
+/* ---------- Action cards ---------- */
+.dc-action-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dc-action-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  border: 2px solid var(--dc-line);
+  border-left: 6px solid var(--dc-accent);
+  border-radius: var(--dc-radius);
+  background: var(--dc-surface-alt);
+}
+
+.dc-action-card__text {
+  margin: 0;
+  font-size: 19px;
+  line-height: 1.5;
+  font-weight: 600;
+  color: var(--dc-ink);
+}
+
+.dc-action-card__help {
+  width: auto;
+  align-self: flex-start;
+  font-size: 19px;
+  padding: 14px 22px;
+}
+
+/* ---------- Guidance flow ---------- */
+.dc-guide {
+  border: 3px solid var(--dc-accent);
+  border-radius: var(--dc-radius);
+  padding: 22px;
+  background: var(--dc-surface);
+}
+
+.dc-guide__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.dc-guide__header h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.dc-guide__source {
+  margin: 12px 0 4px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--dc-accent);
+}
+
+.dc-guide__progress {
+  margin: 16px 0 8px;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--dc-ink-soft);
+}
+
+.dc-guide__step {
+  padding: 20px;
+  border: 2px solid var(--dc-line);
+  border-radius: var(--dc-radius);
+  background: var(--dc-surface-alt);
+}
+
+.dc-guide__instruction {
+  margin: 0 0 10px;
+  font-size: 24px;
+  line-height: 1.4;
+  font-weight: 700;
+  color: var(--dc-ink);
+}
+
+.dc-guide__detail {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.6;
+  color: var(--dc-ink-soft);
+}
+
+.dc-guide__controls {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+.dc-guide__controls .dc-primary-button,
+.dc-guide__controls .dc-secondary-button {
+  width: auto;
+  flex: 1 1 auto;
+  font-size: 19px;
+}
+
+.dc-guide__next {
+  flex: 2 1 auto;
+}
+
+.dc-guide__done {
+  margin: 16px 0 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--dc-ink);
+}
+
+.dc-guide__stuck {
+  margin-top: 20px;
+  padding-top: 18px;
+  border-top: 2px solid var(--dc-line);
+}
+
+.dc-stuck-panel {
+  margin-top: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.dc-stuck-panel__upload {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+/* A plain text button that looks like an inline link, for small actions. */
+.dc-link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  margin-left: 6px;
+  font: inherit;
+  font-weight: 700;
+  color: var(--dc-accent);
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.dc-link-button:focus-visible {
+  outline: 3px solid var(--dc-focus);
+  outline-offset: 3px;
+}

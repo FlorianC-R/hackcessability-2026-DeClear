@@ -581,4 +581,124 @@ Sarah`,
       },
     },
   },
+  {
+    // This sample drives the guidance demo: a family member asks for a digital
+    // task (sending photos on WhatsApp) that DeClear can walk the user through.
+    id: 'grandchild-photos',
+    title: 'Message asking for photos',
+    summary:
+      'A grandchild asks you to send some holiday photos to them on WhatsApp.',
+    text: `Hi Grandma,
+
+The holiday looked lovely! Could you send me a few of the photos you took, on WhatsApp? Just pop them in our chat whenever you get a moment.
+
+Love,
+Jamie`,
+    suggestedReply: {
+      en: 'Hello Jamie! Of course, I will send you some photos on WhatsApp shortly. Love, Grandma',
+      fr: 'Bonjour Jamie ! Bien sûr, je vais t’envoyer quelques photos sur WhatsApp sous peu. Bisous, Grand-mère',
+    },
+    results: {
+      en: {
+        brief: {
+          explanation:
+            'Jamie is asking you to send a few holiday photos to them on WhatsApp.',
+          requiredActions: [
+            {
+              id: 'send-photos',
+              text: 'Send a few of your holiday photos to Jamie on WhatsApp.',
+              sourceText: 'send me a few of the photos you took, on WhatsApp',
+              isDigitalTask: true,
+              taskType: 'send-photos-whatsapp',
+            },
+          ],
+          importantDates: [],
+          urgencyLevel: 'Low',
+          uncertaintyIndicators: [],
+        },
+        standard: {
+          explanation:
+            'This is a friendly message from Jamie. They enjoyed hearing about your holiday and would like you to send a few of your photos to them using WhatsApp. There is no deadline — you can do it whenever suits you.',
+          requiredActions: [
+            {
+              id: 'send-photos',
+              text: 'Send a few of your holiday photos to Jamie on WhatsApp.',
+              sourceText: 'send me a few of the photos you took, on WhatsApp',
+              isDigitalTask: true,
+              taskType: 'send-photos-whatsapp',
+            },
+          ],
+          importantDates: [],
+          urgencyLevel: 'Low',
+          uncertaintyIndicators: [],
+        },
+        guided: {
+          explanation:
+            'This is a warm message from your grandchild Jamie. They are not asking for anything urgent. Here is what they would like: Jamie enjoyed hearing about your holiday and has asked you to send a few of the photos you took. They would like you to send them using WhatsApp, by putting the photos in your chat with them. There is no set time — you can do it whenever you have a quiet moment. If you are not sure how to send photos on WhatsApp, DeClear can guide you through it one step at a time.',
+          requiredActions: [
+            {
+              id: 'send-photos',
+              text: 'Send a few of your holiday photos to Jamie on WhatsApp. DeClear can guide you step by step.',
+              sourceText: 'send me a few of the photos you took, on WhatsApp',
+              isDigitalTask: true,
+              taskType: 'send-photos-whatsapp',
+            },
+          ],
+          importantDates: [],
+          urgencyLevel: 'Low',
+          uncertaintyIndicators: [],
+        },
+      },
+      fr: {
+        brief: {
+          explanation:
+            'Jamie vous demande d’envoyer quelques photos de vacances sur WhatsApp.',
+          requiredActions: [
+            {
+              id: 'send-photos',
+              text: 'Envoyez quelques photos de vacances à Jamie sur WhatsApp.',
+              sourceText: 'send me a few of the photos you took, on WhatsApp',
+              isDigitalTask: true,
+              taskType: 'send-photos-whatsapp',
+            },
+          ],
+          importantDates: [],
+          urgencyLevel: 'Low',
+          uncertaintyIndicators: [],
+        },
+        standard: {
+          explanation:
+            'Ceci est un message amical de Jamie. Il a aimé avoir des nouvelles de vos vacances et aimerait que vous lui envoyiez quelques-unes de vos photos avec WhatsApp. Il n’y a pas de date limite — vous pouvez le faire quand cela vous convient.',
+          requiredActions: [
+            {
+              id: 'send-photos',
+              text: 'Envoyez quelques photos de vacances à Jamie sur WhatsApp.',
+              sourceText: 'send me a few of the photos you took, on WhatsApp',
+              isDigitalTask: true,
+              taskType: 'send-photos-whatsapp',
+            },
+          ],
+          importantDates: [],
+          urgencyLevel: 'Low',
+          uncertaintyIndicators: [],
+        },
+        guided: {
+          explanation:
+            'Ceci est un message chaleureux de votre petit-enfant Jamie. Il ne demande rien d’urgent. Voici ce qu’il souhaite : Jamie a aimé avoir des nouvelles de vos vacances et vous demande d’envoyer quelques-unes des photos que vous avez prises, en utilisant WhatsApp. Il n’y a pas d’heure fixe — faites-le quand vous avez un moment tranquille. Si vous ne savez pas comment envoyer des photos sur WhatsApp, DeClear peut vous guider étape par étape.',
+          requiredActions: [
+            {
+              id: 'send-photos',
+              text: 'Envoyez quelques photos de vacances à Jamie sur WhatsApp. DeClear peut vous guider étape par étape.',
+              sourceText: 'send me a few of the photos you took, on WhatsApp',
+              isDigitalTask: true,
+              taskType: 'send-photos-whatsapp',
+            },
+          ],
+          importantDates: [],
+          urgencyLevel: 'Low',
+          uncertaintyIndicators: [],
+        },
+      },
+    },
+  },
 ]

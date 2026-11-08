@@ -7,9 +7,16 @@ import { sampleNotifications } from './data/sampleNotifications.js'
 import { LANGUAGES } from './data/settingsOptions.js'
 import { loadSettings, saveSettings } from './storage/settingsStorage.js'
 import { isSpeechSupported } from './platform/speech.js'
+import GuidanceFlow from './components/GuidanceFlow.jsx'
 import { processNotification } from './services/notificationProcessor.js'
 import { ProcessStatus } from './services/processorTypes.js'
+import { getGuidance, GuidanceStatus } from './services/guidanceService.js'
+import { GUIDANCE_TASKS } from './data/guidanceTasks.js'
 import './App.css'
+
+// For the MVP demo the guide targets iPhone. A later milestone can let the
+// user pick their device.
+const GUIDE_DEVICE = 'iphone'
 
 // Whether this browser can read text aloud. Computed once at startup.
 const speechSupported = isSpeechSupported()
@@ -29,6 +36,17 @@ function App() {
   const [isProcessing, setIsProcessing] = useState(false)
   // Whether the original-message panel is expanded.
   const [isOriginalOpen, setIsOriginalOpen] = useState(false)
+
+  // Step-by-step guidance state. `guideTask` is the task metadata being guided;
+  // `guidance` is the current { steps, source }; the rest track async/errors.
+  const [guideTask, setGuideTask] = useState(null)
+  const [guidance, setGuidance] = useState(null)
+  const [guidePending, setGuidePending] = useState(false)
+  const [stuckPending, setStuckPending] = useState(false)
+  const [guideNotice, setGuideNotice] = useState('')
+  // Bumped every time new guidance is set, so GuidanceFlow remounts (and resets
+  // to step 1) when fresh steps arrive after "I'm stuck".
+  const [guideVersion, setGuideVersion] = useState(0)
 
   // User settings, loaded from localStorage once at startup. If the browser
   // cannot read aloud, we never start with read-aloud "on".
@@ -91,6 +109,59 @@ function App() {
     setSubmittedMessage(text)
     setIsProcessing(true)
     setIsOriginalOpen(false)
+  }
+
+  // "Help me do this" on an action card: open the guidance flow for the task.
+  async function handleStartGuide(action) {
+    const task = GUIDANCE_TASKS[action.taskType]
+    if (!task) return
+    setGuideTask({ ...task, device: GUIDE_DEVICE })
+    setGuidance(null)
+    setGuideNotice('')
+    setGuidePending(true)
+    const out = await getGuidance({
+      taskType: action.taskType,
+      device: GUIDE_DEVICE,
+      preferences: { aiConsent: settings.aiConsent },
+    })
+    setGuidePending(false)
+    if (out.status === GuidanceStatus.OK) {
+      setGuidance(out.guidance)
+      setGuideVersion((v) => v + 1)
+      setGuideNotice(out.message ?? '')
+    } else {
+      setGuideNotice(out.message ?? 'Step-by-step help is not available right now.')
+    }
+  }
+
+  // "I'm stuck": ask for revised guidance using the user's description and/or
+  // an optional screenshot (only sent with explicit consent).
+  async function handleStuck({ stuckText, image }) {
+    if (!guideTask) return
+    setStuckPending(true)
+    const out = await getGuidance({
+      taskType: guideTask.id,
+      device: guideTask.device,
+      preferences: { aiConsent: settings.aiConsent },
+      stuckText,
+      image,
+    })
+    setStuckPending(false)
+    if (out.status === GuidanceStatus.OK) {
+      setGuidance(out.guidance)
+      setGuideVersion((v) => v + 1)
+      setGuideNotice(out.message ?? '')
+    } else {
+      setGuideNotice(out.message ?? 'Sorry, DeClear could not get new steps right now.')
+    }
+  }
+
+  function closeGuide() {
+    setGuideTask(null)
+    setGuidance(null)
+    setGuideNotice('')
+    setGuidePending(false)
+    setStuckPending(false)
   }
 
   // Run the processor whenever there is a submitted message or the preferences
@@ -196,6 +267,41 @@ function App() {
           onToggleOriginal={() => setIsOriginalOpen((open) => !open)}
           showReadAloud={settings.readAloud && speechSupported}
           speechLang={speechLang}
+          onStartGuide={handleStartGuide}
+        />
+      )}
+
+      {guideTask && guidePending && !guidance && (
+        <p className="dc-processing" role="status" aria-live="polite">
+          Preparing your step-by-step guide…
+        </p>
+      )}
+
+      {guideTask && !guidance && !guidePending && guideNotice && (
+        <p className="dc-notice" role="alert">
+          {guideNotice}{' '}
+          <button
+            type="button"
+            className="dc-link-button"
+            onClick={closeGuide}
+          >
+            Close
+          </button>
+        </p>
+      )}
+
+      {guideTask && guidance && (
+        <GuidanceFlow
+          key={guideVersion}
+          task={guideTask}
+          guidance={guidance}
+          speechLang={speechLang}
+          canReadAloud={settings.readAloud && speechSupported}
+          aiConsent={settings.aiConsent}
+          onStuck={handleStuck}
+          stuckPending={stuckPending}
+          sourceNotice={guideNotice}
+          onClose={closeGuide}
         />
       )}
     </main>
