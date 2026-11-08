@@ -8,6 +8,19 @@ Please do not edit entries by hand. Add notes above this line if needed.
 
 <!-- CHANGELOG:START -->
 <!-- New entries are inserted below this marker, newest first. -->
+### `f5653b3` — 2026-11-07 21:06
+
+**gemini fixes 1**
+
+Changed files:
+
+- `api/_lib/gemini.js`
+- `api/_lib/guide.js`
+- `api/explain.js`
+- `api/guide.js`
+
+Stats: 4 files changed, 39 insertions(+), 1 deletion(-)
+
 ### `336c640` — 2026-11-07 19:37
 
 **feat: add action cards + WhatsApp photo guidance flow (AI + scripted fallback)**
