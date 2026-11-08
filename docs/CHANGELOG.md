@@ -8,6 +8,18 @@ Please do not edit entries by hand. Add notes above this line if needed.
 
 <!-- CHANGELOG:START -->
 <!-- New entries are inserted below this marker, newest first. -->
+### `5bc51fa` — 2026-11-07 21:44
+
+**fix: raise function timeout, set Vercel maxDuration, and log timeout vs network failures**
+
+Changed files:
+
+- `api/_lib/gemini.js`
+- `api/_lib/guide.js`
+- `vercel.json`
+
+Stats: 3 files changed, 29 insertions(+), 4 deletions(-)
+
 ### `589d948` — 2026-11-07 21:36
 
 **fix: disable thinking budget and raise output cap so gemini-3.x returns full JSON**
