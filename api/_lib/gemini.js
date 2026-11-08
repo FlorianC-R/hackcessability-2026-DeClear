@@ -20,6 +20,20 @@ export const MAX_OUTPUT_TOKENS = 2048
 // functions may run up to 60s, so we allow 45s before aborting to reduce
 // spurious timeouts, while still bounding the request.
 export const REQUEST_TIMEOUT_MS = 45000
+// Transient failures (503 "high demand", or a timeout) are retried a couple of
+// times with a short backoff, so a brief capacity spike does not surface as an
+// error during a live demo.
+export const MAX_ATTEMPTS = 3
+export const RETRY_BACKOFF_MS = 1200
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+// True for failures that are worth retrying: a 503 from Gemini, or a timeout.
+function isRetryable(error) {
+  return error?.upstreamStatus === 503 || error?.isTimeout === true
+}
 
 const SUPPORTED_LANGUAGES = { en: 'English', fr: 'French' }
 const SUPPORTED_LEVELS = { brief: 'brief', standard: 'standard', guided: 'guided' }
@@ -120,83 +134,96 @@ export async function generateExplanation({
     },
   }
 
-  const controller = new AbortController()
-  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+  // One attempt: fetch, check status, parse, validate, ground. Throws on any
+  // failure (with .upstreamStatus / .isTimeout set so the retry loop can decide
+  // whether to try again).
+  async function attempt() {
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
 
-  let response
-  try {
-    response = await fetchImpl(endpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        // Key travels in a header, not the URL, so it does not land in logs.
-        'x-goog-api-key': apiKey,
-      },
-      body: JSON.stringify(body),
-      signal: controller.signal,
-    })
-  } catch (err) {
-    const timedOut = err?.name === 'AbortError'
-    const error = new Error(
-      timedOut ? 'Gemini request timed out' : 'Gemini request failed',
-    )
-    error.code = 'upstream'
-    // Record WHICH kind of failure this was, so logs distinguish a timeout
-    // (model too slow / over our 30s budget) from a network error.
-    error.upstreamDetail = timedOut
-      ? `timeout after ${REQUEST_TIMEOUT_MS}ms`
-      : `fetch failed: ${err?.name ?? 'unknown'} ${err?.message ?? ''}`.slice(0, 200)
-    throw error
-  } finally {
-    clearTimeout(timer)
-  }
+    let response
+    try {
+      response = await fetchImpl(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          // Key travels in a header, not the URL, so it does not land in logs.
+          'x-goog-api-key': apiKey,
+        },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      })
+    } catch (err) {
+      const timedOut = err?.name === 'AbortError'
+      const error = new Error(
+        timedOut ? 'Gemini request timed out' : 'Gemini request failed',
+      )
+      error.code = 'upstream'
+      error.isTimeout = timedOut
+      error.upstreamDetail = timedOut
+        ? `timeout after ${REQUEST_TIMEOUT_MS}ms`
+        : `fetch failed: ${err?.name ?? 'unknown'} ${err?.message ?? ''}`.slice(0, 200)
+      throw error
+    } finally {
+      clearTimeout(timer)
+    }
 
-  if (!response.ok) {
-    // 429 = rate limit / quota. Distinguish quota exhaustion where possible,
-    // but never fall through to any paid path.
-    if (response.status === 429) {
-      const error = new Error('Gemini free-tier limit reached')
-      error.code = 'quota'
-      error.upstreamStatus = 429
+    if (!response.ok) {
+      if (response.status === 429) {
+        const error = new Error('Gemini free-tier limit reached')
+        error.code = 'quota'
+        error.upstreamStatus = 429
+        throw error
+      }
+      // Gemini error bodies describe the problem and do NOT contain the API key,
+      // so this snippet is safe to surface in server logs.
+      let detail
+      try {
+        detail = (await response.text()).slice(0, 300)
+      } catch {
+        detail = ''
+      }
+      const error = new Error(`Gemini responded with status ${response.status}`)
+      error.code = 'upstream'
+      error.upstreamStatus = response.status
+      error.upstreamDetail = detail
       throw error
     }
-    // Capture a short snippet of Gemini's error body for diagnostics. Gemini
-    // error bodies describe the problem (e.g. an unknown model) and do NOT
-    // contain the API key, so this is safe to surface in server logs.
-    let detail
-    try {
-      detail = (await response.text()).slice(0, 300)
-    } catch {
-      detail = ''
+
+    const data = await response.json()
+    const text = extractText(data)
+    if (!text) {
+      const error = new Error('Gemini returned an empty response')
+      error.code = 'invalid'
+      error.upstreamDetail = `finishReason=${data?.candidates?.[0]?.finishReason ?? 'unknown'}`
+      throw error
     }
-    const error = new Error(`Gemini responded with status ${response.status}`)
-    error.code = 'upstream'
-    error.upstreamStatus = response.status
-    error.upstreamDetail = detail
-    throw error
+
+    let parsed
+    try {
+      parsed = parseJsonObject(text)
+    } catch {
+      const error = new Error('Gemini returned a response we could not read')
+      error.code = 'invalid'
+      throw error
+    }
+
+    const normalized = normalizeResult(parsed)
+    const grounded = groundResult(normalized, message)
+    return { result: grounded }
   }
 
-  const data = await response.json()
-  const text = extractText(data)
-  if (!text) {
-    const error = new Error('Gemini returned an empty response')
-    error.code = 'invalid'
-    // Surface why it was empty (e.g. finishReason "MAX_TOKENS") for diagnostics.
-    error.upstreamDetail = `finishReason=${data?.candidates?.[0]?.finishReason ?? 'unknown'}`
-    throw error
+  // Retry loop: retry a 503 ("high demand") or a timeout a couple of times with
+  // a short backoff. Other errors (bad model, invalid JSON, quota) fail fast.
+  let lastError
+  for (let i = 0; i < MAX_ATTEMPTS; i++) {
+    try {
+      return await attempt()
+    } catch (err) {
+      lastError = err
+      if (!isRetryable(err) || i === MAX_ATTEMPTS - 1) throw err
+      await sleep(RETRY_BACKOFF_MS * (i + 1))
+    }
   }
-
-  let parsed
-  try {
-    parsed = parseJsonObject(text)
-  } catch {
-    const error = new Error('Gemini returned a response we could not read')
-    error.code = 'invalid'
-    throw error
-  }
-
-  // Validate shape, then verify every quote against the real message.
-  const normalized = normalizeResult(parsed)
-  const grounded = groundResult(normalized, message)
-  return { result: grounded }
+  throw lastError
 }

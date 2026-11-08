@@ -18,6 +18,17 @@ export const MAX_OUTPUT_TOKENS = 2048
 // Allow 45s (Vercel Hobby functions may run up to 60s) to avoid spurious
 // timeouts on slow/cold responses, while still bounding the request.
 export const REQUEST_TIMEOUT_MS = 45000
+// Retry transient 503 / timeout failures a couple of times with backoff.
+export const MAX_ATTEMPTS = 3
+export const RETRY_BACKOFF_MS = 1200
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
+function isRetryable(error) {
+  return error?.upstreamStatus === 503 || error?.isTimeout === true
+}
 // ~1.5MB of base64 (roughly ~1.1MB raw image). Keeps requests small/fast.
 export const MAX_IMAGE_BASE64_CHARS = 1_500_000
 export const ALLOWED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp']
@@ -132,71 +143,84 @@ export async function generateGuidance({
     },
   }
 
-  const controller = new AbortController()
-  const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+  async function attempt() {
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
 
-  let response
-  try {
-    response = await fetchImpl(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
-      body: JSON.stringify(body),
-      signal: controller.signal,
-    })
-  } catch (err) {
-    const timedOut = err?.name === 'AbortError'
-    const e = new Error(
-      timedOut ? 'Guidance request timed out' : 'Guidance request failed',
-    )
-    e.code = 'upstream'
-    e.upstreamDetail = timedOut
-      ? `timeout after ${REQUEST_TIMEOUT_MS}ms`
-      : `fetch failed: ${err?.name ?? 'unknown'} ${err?.message ?? ''}`.slice(0, 200)
-    throw e
-  } finally {
-    clearTimeout(timer)
-  }
+    let response
+    try {
+      response = await fetchImpl(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
+        body: JSON.stringify(body),
+        signal: controller.signal,
+      })
+    } catch (err) {
+      const timedOut = err?.name === 'AbortError'
+      const e = new Error(
+        timedOut ? 'Guidance request timed out' : 'Guidance request failed',
+      )
+      e.code = 'upstream'
+      e.isTimeout = timedOut
+      e.upstreamDetail = timedOut
+        ? `timeout after ${REQUEST_TIMEOUT_MS}ms`
+        : `fetch failed: ${err?.name ?? 'unknown'} ${err?.message ?? ''}`.slice(0, 200)
+      throw e
+    } finally {
+      clearTimeout(timer)
+    }
 
-  if (!response.ok) {
-    if (response.status === 429) {
-      const e = new Error('Gemini free-tier limit reached')
-      e.code = 'quota'
-      e.upstreamStatus = 429
+    if (!response.ok) {
+      if (response.status === 429) {
+        const e = new Error('Gemini free-tier limit reached')
+        e.code = 'quota'
+        e.upstreamStatus = 429
+        throw e
+      }
+      let detail
+      try {
+        detail = (await response.text()).slice(0, 300)
+      } catch {
+        detail = ''
+      }
+      const e = new Error(`Gemini responded with status ${response.status}`)
+      e.code = 'upstream'
+      e.upstreamStatus = response.status
+      e.upstreamDetail = detail
       throw e
     }
-    // Gemini error bodies describe the problem (e.g. unknown model) and do not
-    // contain the API key, so a short snippet is safe to surface in logs.
-    let detail
-    try {
-      detail = (await response.text()).slice(0, 300)
-    } catch {
-      detail = ''
+
+    const data = await response.json()
+    const text = extractText(data)
+    if (!text) {
+      const e = new Error('Gemini returned an empty response')
+      e.code = 'invalid'
+      e.upstreamDetail = `finishReason=${data?.candidates?.[0]?.finishReason ?? 'unknown'}`
+      throw e
     }
-    const e = new Error(`Gemini responded with status ${response.status}`)
-    e.code = 'upstream'
-    e.upstreamStatus = response.status
-    e.upstreamDetail = detail
-    throw e
+
+    let parsed
+    try {
+      parsed = parseJsonObject(text)
+    } catch {
+      const e = new Error('Gemini returned a response we could not read')
+      e.code = 'invalid'
+      throw e
+    }
+
+    const guidance = normalizeGuidance(parsed, 'ai')
+    return { guidance }
   }
 
-  const data = await response.json()
-  const text = extractText(data)
-  if (!text) {
-    const e = new Error('Gemini returned an empty response')
-    e.code = 'invalid'
-    e.upstreamDetail = `finishReason=${data?.candidates?.[0]?.finishReason ?? 'unknown'}`
-    throw e
+  let lastError
+  for (let i = 0; i < MAX_ATTEMPTS; i++) {
+    try {
+      return await attempt()
+    } catch (err) {
+      lastError = err
+      if (!isRetryable(err) || i === MAX_ATTEMPTS - 1) throw err
+      await sleep(RETRY_BACKOFF_MS * (i + 1))
+    }
   }
-
-  let parsed
-  try {
-    parsed = parseJsonObject(text)
-  } catch {
-    const e = new Error('Gemini returned a response we could not read')
-    e.code = 'invalid'
-    throw e
-  }
-
-  const guidance = normalizeGuidance(parsed, 'ai')
-  return { guidance }
+  throw lastError
 }

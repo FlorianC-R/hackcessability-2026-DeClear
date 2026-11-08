@@ -111,3 +111,68 @@ describe('generateExplanation', () => {
     ).rejects.toMatchObject({ code: 'upstream' })
   })
 })
+
+describe('generateExplanation — retry on transient failures', () => {
+  const GOOD = {
+    title: 'Bill',
+    explanation: 'You owe money by a date.',
+    actions: [],
+    dates: [],
+    urgency: 'High',
+    uncertainties: [],
+  }
+
+  it('retries a 503 and then succeeds', async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockResolvedValueOnce({ ok: false, status: 503, text: async () => 'high demand' })
+      .mockResolvedValueOnce(geminiResponse(GOOD))
+
+    const { result } = await generateExplanation({
+      message: MESSAGE,
+      level: 'standard',
+      language: 'en',
+      apiKey: 'k',
+      model: 'm',
+      fetchImpl,
+    })
+    expect(result.urgency).toBe('High')
+    expect(fetchImpl).toHaveBeenCalledTimes(2)
+  })
+
+  it('gives up after MAX_ATTEMPTS of persistent 503', async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockResolvedValue({ ok: false, status: 503, text: async () => 'high demand' })
+
+    await expect(
+      generateExplanation({
+        message: MESSAGE,
+        level: 'standard',
+        language: 'en',
+        apiKey: 'k',
+        model: 'm',
+        fetchImpl,
+      }),
+    ).rejects.toMatchObject({ code: 'upstream', upstreamStatus: 503 })
+    expect(fetchImpl).toHaveBeenCalledTimes(3)
+  })
+
+  it('does NOT retry a 404 (bad model) — fails fast', async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockResolvedValue({ ok: false, status: 404, text: async () => 'not found' })
+
+    await expect(
+      generateExplanation({
+        message: MESSAGE,
+        level: 'standard',
+        language: 'en',
+        apiKey: 'k',
+        model: 'm',
+        fetchImpl,
+      }),
+    ).rejects.toMatchObject({ code: 'upstream', upstreamStatus: 404 })
+    expect(fetchImpl).toHaveBeenCalledTimes(1)
+  })
+})
