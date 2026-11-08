@@ -8,6 +8,19 @@ Please do not edit entries by hand. Add notes above this line if needed.
 
 <!-- CHANGELOG:START -->
 <!-- New entries are inserted below this marker, newest first. -->
+### `63d4fb3` — 2026-11-07 22:28
+
+**feat: tag AI actions with supported digital tasks so Help me do this shows in AI mode**
+
+Changed files:
+
+- `api/_lib/gemini.js`
+- `src/data/guidanceTasks.js`
+- `src/services/resultSchema.js`
+- `src/services/resultSchema.test.js`
+
+Stats: 4 files changed, 88 insertions(+), 6 deletions(-)
+
 ### `30634b7` — 2026-11-07 22:08
 
 **fix: retry Gemini 503 and timeout with backoff for demo reliability**
