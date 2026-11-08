@@ -8,6 +8,19 @@ Please do not edit entries by hand. Add notes above this line if needed.
 
 <!-- CHANGELOG:START -->
 <!-- New entries are inserted below this marker, newest first. -->
+### `5dd00d7` — 2026-11-08 08:12
+
+**copy: update tagline to 'Understand your technology in the clearest words'**
+
+Changed files:
+
+- `src/i18n/en.js`
+- `src/i18n/es.js`
+- `src/i18n/fr.js`
+- `src/i18n/zh-CN.js`
+
+Stats: 4 files changed, 4 insertions(+), 4 deletions(-)
+
 ### `659be60` — 2026-11-08 07:23
 
 **feat: pick the nicest available voice and a gentler delivery for read-aloud**
