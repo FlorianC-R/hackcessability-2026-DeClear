@@ -8,6 +8,30 @@ Please do not edit entries by hand. Add notes above this line if needed.
 
 <!-- CHANGELOG:START -->
 <!-- New entries are inserted below this marker, newest first. -->
+### `336c640` — 2026-11-07 19:37
+
+**feat: add action cards + WhatsApp photo guidance flow (AI + scripted fallback)**
+
+Changed files:
+
+- `api/_lib/guide.js`
+- `api/_lib/guide.test.js`
+- `api/guide.js`
+- `src/App.css`
+- `src/App.jsx`
+- `src/components/ActionCard.jsx`
+- `src/components/GuidanceFlow.jsx`
+- `src/components/ResultPanel.jsx`
+- `src/data/guidanceTasks.js`
+- `src/data/sampleNotifications.js`
+- `src/platform/image.js`
+- `src/services/guidanceSchema.js`
+- `src/services/guidanceSchema.test.js`
+- `src/services/guidanceService.js`
+- `src/services/guidanceService.test.js`
+
+Stats: 15 files changed, 1452 insertions(+), 9 deletions(-)
+
 ### `29a3271` — 2026-11-07 19:20
 
 **feat: add Gemini free-tier AI provider via serverless /api/explain with consent + grounding**
