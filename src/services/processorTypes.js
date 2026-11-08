@@ -39,10 +39,15 @@ export const ProcessStatus = {
   TOO_LONG: 'too-long', // message exceeds the size limit
   PROVIDER_UNAVAILABLE: 'provider-unavailable', // configured provider missing
   ERROR: 'error', // a provider failed unexpectedly while processing
+  CONSENT_REQUIRED: 'consent-required', // user has not agreed to send text to the AI
+  NOT_CONFIGURED: 'not-configured', // the AI provider is missing its server config
+  RATE_LIMITED: 'rate-limited', // too many requests in a short time
+  QUOTA_EXHAUSTED: 'quota-exhausted', // the free-tier quota is used up
 }
 
 export const Providers = {
   DEMO: 'demo',
+  AI: 'ai', // Gemini-backed, via the serverless /api/explain route
   OLLAMA: 'ollama', // reserved for a later milestone
 }
 

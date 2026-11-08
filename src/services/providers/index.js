@@ -7,10 +7,12 @@
 // the processor or the UI.
 
 import demoProvider from './demoProvider.js'
+import geminiProvider from './geminiProvider.js'
 import { Providers } from '../processorTypes.js'
 
 const registry = {
   [Providers.DEMO]: demoProvider,
+  [Providers.AI]: geminiProvider,
   // [Providers.OLLAMA]: ollamaProvider,  // added in a later milestone
 }
 

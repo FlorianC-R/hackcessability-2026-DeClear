@@ -47,7 +47,10 @@ function App() {
     // from the event handler keeps the effect free of synchronous setState.
     if (
       submittedMessage !== null &&
-      (next.level !== settings.level || next.language !== settings.language)
+      (next.level !== settings.level ||
+        next.language !== settings.language ||
+        next.mode !== settings.mode ||
+        next.aiConsent !== settings.aiConsent)
     ) {
       setIsProcessing(true)
     }
@@ -104,7 +107,12 @@ function App() {
 
     processNotification({
       message: submittedMessage,
-      preferences: { level: settings.level, language: settings.language },
+      providerId: settings.mode === 'ai' ? 'ai' : 'demo',
+      preferences: {
+        level: settings.level,
+        language: settings.language,
+        aiConsent: settings.aiConsent,
+      },
     })
       .then((result) => {
         if (cancelled) return
@@ -128,7 +136,13 @@ function App() {
     return () => {
       cancelled = true
     }
-  }, [submittedMessage, settings.level, settings.language])
+  }, [
+    submittedMessage,
+    settings.level,
+    settings.language,
+    settings.mode,
+    settings.aiConsent,
+  ])
 
   const speechLang =
     LANGUAGES.find((item) => item.value === settings.language)?.speechLang ??

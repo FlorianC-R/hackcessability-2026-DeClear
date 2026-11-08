@@ -28,11 +28,31 @@ export const LANGUAGES = [
   { value: 'fr', label: 'French (Français)', speechLang: 'fr-FR' },
 ]
 
+// Processing mode. Demo is deterministic and offline (the three samples). AI
+// sends the message to Google Gemini via our server and requires consent.
+export const PROCESSING_MODES = [
+  {
+    value: 'demo',
+    label: 'Demo mode',
+    description:
+      'Explains the three example messages. Works offline. Nothing is sent anywhere.',
+  },
+  {
+    value: 'ai',
+    label: 'AI mode (Google Gemini)',
+    description:
+      'Explains messages you paste, using Google Gemini. Requires your consent to send text.',
+  },
+]
+
 export const DEFAULT_SETTINGS = {
   level: 'standard',
   language: 'en',
   readAloud: false,
+  mode: 'demo', // 'demo' | 'ai' — default to the safe, offline mode
+  aiConsent: false, // must be explicitly turned on before AI mode sends text
 }
 
 export const LEVEL_VALUES = EXPLANATION_LEVELS.map((item) => item.value)
 export const LANGUAGE_VALUES = LANGUAGES.map((item) => item.value)
+export const MODE_VALUES = PROCESSING_MODES.map((item) => item.value)

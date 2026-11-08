@@ -9,6 +9,7 @@ import {
   DEFAULT_SETTINGS,
   LEVEL_VALUES,
   LANGUAGE_VALUES,
+  MODE_VALUES,
 } from '../data/settingsOptions.js'
 
 const STORAGE_KEY = 'declear.settings.v1'
@@ -28,6 +29,11 @@ function coerceSettings(raw) {
       typeof raw.readAloud === 'boolean'
         ? raw.readAloud
         : DEFAULT_SETTINGS.readAloud,
+    mode: MODE_VALUES.includes(raw.mode) ? raw.mode : DEFAULT_SETTINGS.mode,
+    aiConsent:
+      typeof raw.aiConsent === 'boolean'
+        ? raw.aiConsent
+        : DEFAULT_SETTINGS.aiConsent,
   }
 }
 
