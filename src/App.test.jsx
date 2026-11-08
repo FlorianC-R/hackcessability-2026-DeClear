@@ -122,16 +122,24 @@ describe('App — start a new message resets everything', () => {
   })
 })
 
-describe('App — settings remain accessible across stages', () => {
-  it('shows the settings toggle on the actions stage', async () => {
+describe('App — settings are only on the message stage', () => {
+  it('shows the settings toggle on the message stage', () => {
+    render(<App />)
+    expect(
+      screen.getByRole('button', { name: /change settings/i }),
+    ).toBeInTheDocument()
+  })
+
+  it('hides the settings toggle once a message is being processed (actions stage)', async () => {
     const user = userEvent.setup()
     render(<App />)
     await explainSample(user, photosSample.title)
     await screen.findByText(/step 2 of 3/i)
-    // SettingsPanel renders its toggle on every stage.
+    // Settings must NOT be reachable while treating a message, so changing the
+    // language cannot leave already-generated guidance in an old language.
     expect(
-      screen.getByRole('button', { name: /change settings/i }),
-    ).toBeInTheDocument()
+      screen.queryByRole('button', { name: /change settings/i }),
+    ).toBeNull()
   })
 })
 

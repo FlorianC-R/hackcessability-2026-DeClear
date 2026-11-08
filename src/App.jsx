@@ -296,8 +296,6 @@ function App() {
     <main className="dc-app">
       <AppHeader />
 
-      {stage !== STAGE.INPUT && settingsPanel}
-
       <StageProgress current={stage} />
 
       {/* ---------------- Stage 1: Message ---------------- */}
