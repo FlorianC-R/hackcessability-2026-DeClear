@@ -8,6 +8,17 @@ Please do not edit entries by hand. Add notes above this line if needed.
 
 <!-- CHANGELOG:START -->
 <!-- New entries are inserted below this marker, newest first. -->
+### `589d948` — 2026-11-07 21:36
+
+**fix: disable thinking budget and raise output cap so gemini-3.x returns full JSON**
+
+Changed files:
+
+- `api/_lib/gemini.js`
+- `api/_lib/guide.js`
+
+Stats: 2 files changed, 22 insertions(+), 4 deletions(-)
+
 ### `f5653b3` — 2026-11-07 21:06
 
 **gemini fixes 1**
