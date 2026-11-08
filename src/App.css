@@ -148,18 +148,22 @@
   gap: 16px;
 }
 
+/* Two columns on narrower screens so the six examples stay a tidy, symmetric
+   grid (3x2 wide, 2x3 narrow) instead of a tall single column. */
 @media (max-width: 720px) {
   .dc-sample-list {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
+/* Cards are now title + choose label only (no sub-description), so they are
+   more compact: less padding and a tighter gap reclaim the old summary space. */
 .dc-sample-card {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
   text-align: left;
-  padding: 18px;
+  padding: 14px 16px;
   border: 2px solid var(--dc-line);
   border-radius: var(--dc-radius);
   background: var(--dc-surface);
@@ -179,19 +183,13 @@
 }
 
 .dc-sample-card__title {
-  font-size: 19px;
+  font-size: 18px;
   font-weight: 700;
-}
-
-.dc-sample-card__summary {
-  font-size: 16px;
-  color: var(--dc-ink-soft);
-  line-height: 1.5;
+  line-height: 1.3;
 }
 
 .dc-sample-card__state {
-  margin-top: 4px;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--dc-accent);
 }
@@ -879,7 +877,6 @@
 }
 
 .dc-sample-card__title,
-.dc-sample-card__summary,
 .dc-choice__label,
 .dc-choice__desc,
 .dc-guide__instruction,

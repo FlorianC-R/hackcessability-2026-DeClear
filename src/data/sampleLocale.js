@@ -76,6 +76,18 @@ const SAMPLE_LOCALE = {
       summary: '孙辈请您通过 WhatsApp 发一些度假照片给他们。',
     },
   },
+  'pharmacy-prescription': {
+    en: { title: 'Prescription ready' },
+    fr: { title: 'Ordonnance prête' },
+    es: { title: 'Receta lista' },
+    'zh-CN': { title: '处方已就绪' },
+  },
+  'community-newsletter': {
+    en: { title: 'Community newsletter' },
+    fr: { title: 'Bulletin communautaire' },
+    es: { title: 'Boletín comunitario' },
+    'zh-CN': { title: '社区通讯' },
+  },
 }
 
 // Return { title, summary } for a sample in a language, falling back to English,

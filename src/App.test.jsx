@@ -20,6 +20,16 @@ async function explainSample(user, title) {
 const billSample = sampleNotifications.find((s) => s.id === 'electricity-bill')
 const familySample = sampleNotifications.find((s) => s.id === 'family-message')
 
+describe('App — example cards', () => {
+  it('shows six example cards, each with a title and a choose label only', () => {
+    render(<App />)
+    const chooseButtons = screen.getAllByText(/choose this example/i)
+    expect(chooseButtons).toHaveLength(6)
+    // Cards carry no sub-description element anymore.
+    expect(document.querySelector('.dc-sample-card__summary')).toBeNull()
+  })
+})
+
 describe('App — three-stage navigation', () => {
   it('starts on the Message stage (step 1; guidance step not yet shown)', () => {
     render(<App />)

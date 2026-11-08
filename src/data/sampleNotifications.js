@@ -701,4 +701,249 @@ Jamie`,
       },
     },
   },
+  {
+    // A pharmacy notice: a clear, non-digital action (collect a prescription).
+    id: 'pharmacy-prescription',
+    title: 'Prescription ready',
+    summary: 'A pharmacy says your prescription is ready to collect.',
+    text: `Bramble Pharmacy
+
+Hello,
+
+Your repeat prescription is now ready to collect. Our opening hours are 9 AM to 6 PM, Monday to Saturday.
+
+Please bring a form of identification. Prescriptions not collected within 14 days are returned to stock.
+
+Bramble Pharmacy`,
+    results: {
+      en: {
+        brief: {
+          explanation:
+            'Your prescription is ready to collect at Bramble Pharmacy. Bring identification.',
+          requiredActions: [
+            {
+              id: 'collect-prescription',
+              text: 'Collect your prescription from the pharmacy, and bring some identification.',
+              sourceText: 'Your repeat prescription is now ready to collect',
+            },
+          ],
+          importantDates: [],
+          urgencyLevel: 'Medium',
+          uncertaintyIndicators: [],
+        },
+        standard: {
+          explanation:
+            'This is a note from Bramble Pharmacy. Your repeat prescription is ready for you to collect. They are open 9 AM to 6 PM, Monday to Saturday, and ask you to bring identification. If it is not collected within 14 days, it is returned to stock.',
+          requiredActions: [
+            {
+              id: 'collect-prescription',
+              text: 'Go to the pharmacy to collect your prescription, and take identification with you.',
+              sourceText: 'Your repeat prescription is now ready to collect',
+            },
+          ],
+          importantDates: [
+            {
+              id: 'collect-by',
+              label: 'Collect within',
+              dateText: '14 days',
+              sourceText: 'Prescriptions not collected within 14 days are returned to stock',
+            },
+          ],
+          urgencyLevel: 'Medium',
+          uncertaintyIndicators: [],
+        },
+        guided: {
+          explanation:
+            'This is a note from Bramble Pharmacy. Here is what it means, step by step: First, your repeat prescription is ready, so you can go and pick it up. Second, the pharmacy is open from 9 in the morning until 6 in the evening, Monday to Saturday. Third, please take a form of identification with you, such as a bus pass or driving licence. Finally, try not to leave it too long — if a prescription is not collected within 14 days, it is put back into stock, and you would have to ask again.',
+          requiredActions: [
+            {
+              id: 'collect-prescription',
+              text: 'Visit Bramble Pharmacy during opening hours (9 AM to 6 PM, Mon–Sat) and take identification to collect your prescription.',
+              sourceText: 'Your repeat prescription is now ready to collect',
+            },
+          ],
+          importantDates: [
+            {
+              id: 'collect-by',
+              label: 'Collect within',
+              dateText: '14 days',
+              sourceText: 'Prescriptions not collected within 14 days are returned to stock',
+            },
+          ],
+          urgencyLevel: 'Medium',
+          uncertaintyIndicators: [],
+        },
+      },
+      fr: {
+        brief: {
+          explanation:
+            'Votre ordonnance est prête à récupérer à la pharmacie Bramble. Apportez une pièce d’identité.',
+          requiredActions: [
+            {
+              id: 'collect-prescription',
+              text: 'Allez chercher votre ordonnance à la pharmacie et apportez une pièce d’identité.',
+              sourceText: 'Your repeat prescription is now ready to collect',
+            },
+          ],
+          importantDates: [],
+          urgencyLevel: 'Medium',
+          uncertaintyIndicators: [],
+        },
+        standard: {
+          explanation:
+            'Ceci est un mot de la pharmacie Bramble. Votre ordonnance renouvelable est prête à être récupérée. Elle est ouverte de 9 h à 18 h, du lundi au samedi, et vous demande d’apporter une pièce d’identité. Si elle n’est pas récupérée sous 14 jours, elle est remise en stock.',
+          requiredActions: [
+            {
+              id: 'collect-prescription',
+              text: 'Rendez-vous à la pharmacie pour récupérer votre ordonnance, en apportant une pièce d’identité.',
+              sourceText: 'Your repeat prescription is now ready to collect',
+            },
+          ],
+          importantDates: [
+            {
+              id: 'collect-by',
+              label: 'À récupérer sous',
+              dateText: '14 jours',
+              sourceText: 'Prescriptions not collected within 14 days are returned to stock',
+            },
+          ],
+          urgencyLevel: 'Medium',
+          uncertaintyIndicators: [],
+        },
+        guided: {
+          explanation:
+            'Ceci est un mot de la pharmacie Bramble. Voici ce que cela signifie, étape par étape : D’abord, votre ordonnance renouvelable est prête, vous pouvez donc aller la chercher. Ensuite, la pharmacie est ouverte de 9 h du matin à 18 h, du lundi au samedi. Puis, apportez une pièce d’identité, par exemple une carte de transport ou un permis de conduire. Enfin, n’attendez pas trop : si une ordonnance n’est pas récupérée sous 14 jours, elle est remise en stock et il faudrait la redemander.',
+          requiredActions: [
+            {
+              id: 'collect-prescription',
+              text: 'Rendez-vous à la pharmacie Bramble aux heures d’ouverture (9 h à 18 h, du lundi au samedi) avec une pièce d’identité pour récupérer votre ordonnance.',
+              sourceText: 'Your repeat prescription is now ready to collect',
+            },
+          ],
+          importantDates: [
+            {
+              id: 'collect-by',
+              label: 'À récupérer sous',
+              dateText: '14 jours',
+              sourceText: 'Prescriptions not collected within 14 days are returned to stock',
+            },
+          ],
+          urgencyLevel: 'Medium',
+          uncertaintyIndicators: [],
+        },
+      },
+    },
+  },
+  {
+    // A community newsletter: friendly, no action needed (completion outcome).
+    id: 'community-newsletter',
+    title: 'Community newsletter',
+    summary: 'A local community centre shares news of an upcoming coffee morning.',
+    text: `Maple Street Community Centre — Monthly News
+
+Hello everyone,
+
+We are holding a coffee morning on the first Friday of next month, from 10 AM. All are welcome, and there is no charge.
+
+There is nothing you need to do to attend — just come along if you can.
+
+Warm wishes,
+The Maple Street Team`,
+    results: {
+      en: {
+        brief: {
+          explanation:
+            'The community centre is holding a free coffee morning next month. You can just turn up; nothing to do.',
+          requiredActions: [],
+          importantDates: [
+            {
+              id: 'coffee-morning',
+              label: 'Coffee morning',
+              dateText: 'first Friday of next month, from 10 AM',
+              sourceText: 'the first Friday of next month, from 10 AM',
+            },
+          ],
+          urgencyLevel: 'None',
+          uncertaintyIndicators: [],
+        },
+        standard: {
+          explanation:
+            'This is a friendly newsletter from the Maple Street Community Centre. They are holding a free coffee morning on the first Friday of next month, from 10 AM. Everyone is welcome, and there is nothing you need to do — you can simply come along if you would like to.',
+          requiredActions: [],
+          importantDates: [
+            {
+              id: 'coffee-morning',
+              label: 'Coffee morning',
+              dateText: 'first Friday of next month, from 10 AM',
+              sourceText: 'the first Friday of next month, from 10 AM',
+            },
+          ],
+          urgencyLevel: 'None',
+          uncertaintyIndicators: [],
+        },
+        guided: {
+          explanation:
+            'This is a warm, friendly newsletter from the Maple Street Community Centre — not a bill or an official letter, so there is nothing urgent here. Here is what it says: they are holding a coffee morning on the first Friday of next month, starting at 10 in the morning. Everyone is welcome and it is free. They make a point of saying there is nothing you need to do to attend — you can simply go along if you feel like it and would enjoy the company.',
+          requiredActions: [],
+          importantDates: [
+            {
+              id: 'coffee-morning',
+              label: 'Coffee morning',
+              dateText: 'first Friday of next month, from 10 AM',
+              sourceText: 'the first Friday of next month, from 10 AM',
+            },
+          ],
+          urgencyLevel: 'None',
+          uncertaintyIndicators: [],
+        },
+      },
+      fr: {
+        brief: {
+          explanation:
+            'Le centre communautaire organise un café-rencontre gratuit le mois prochain. Vous pouvez simplement venir ; rien à faire.',
+          requiredActions: [],
+          importantDates: [
+            {
+              id: 'coffee-morning',
+              label: 'Café-rencontre',
+              dateText: 'le premier vendredi du mois prochain, à partir de 10 h',
+              sourceText: 'the first Friday of next month, from 10 AM',
+            },
+          ],
+          urgencyLevel: 'None',
+          uncertaintyIndicators: [],
+        },
+        standard: {
+          explanation:
+            'Ceci est un bulletin amical du centre communautaire de Maple Street. Il organise un café-rencontre gratuit le premier vendredi du mois prochain, à partir de 10 h. Tout le monde est bienvenu, et il n’y a rien à faire — vous pouvez simplement venir si vous le souhaitez.',
+          requiredActions: [],
+          importantDates: [
+            {
+              id: 'coffee-morning',
+              label: 'Café-rencontre',
+              dateText: 'le premier vendredi du mois prochain, à partir de 10 h',
+              sourceText: 'the first Friday of next month, from 10 AM',
+            },
+          ],
+          urgencyLevel: 'None',
+          uncertaintyIndicators: [],
+        },
+        guided: {
+          explanation:
+            'Ceci est un bulletin chaleureux et amical du centre communautaire de Maple Street — ce n’est ni une facture ni une lettre officielle, il n’y a donc rien d’urgent. Voici ce qu’il dit : un café-rencontre est organisé le premier vendredi du mois prochain, à partir de 10 h du matin. Tout le monde est bienvenu et c’est gratuit. Le centre précise qu’il n’y a rien à faire pour y assister — vous pouvez simplement y aller si cela vous dit et si la compagnie vous fait plaisir.',
+          requiredActions: [],
+          importantDates: [
+            {
+              id: 'coffee-morning',
+              label: 'Café-rencontre',
+              dateText: 'le premier vendredi du mois prochain, à partir de 10 h',
+              sourceText: 'the first Friday of next month, from 10 AM',
+            },
+          ],
+          urgencyLevel: 'None',
+          uncertaintyIndicators: [],
+        },
+      },
+    },
+  },
 ]

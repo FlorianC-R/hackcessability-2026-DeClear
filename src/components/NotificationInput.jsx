@@ -92,13 +92,12 @@ function NotificationInput({
           aria-label={t('input.samplesLabel')}
         >
           {samples.map((sample) => {
-            const { title, summary } = localizedSampleMeta(sample, language)
+            const { title } = localizedSampleMeta(sample, language)
             return (
               <SampleCard
                 key={sample.id}
                 sample={sample}
                 title={title}
-                summary={summary}
                 selected={selectedSampleId === sample.id}
                 onSelect={onSelectSample}
               />
