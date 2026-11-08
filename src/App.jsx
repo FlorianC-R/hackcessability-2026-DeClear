@@ -260,6 +260,15 @@ function App() {
 
   const okResult =
     response && response.status === ProcessStatus.OK ? response.result : null
+
+  // Whether this result has at least one action DeClear can actually walk the
+  // user through. Only then does the flow include a Guidance stage; otherwise
+  // the workflow legitimately ends at the Actions/explanation stage.
+  const hasGuidableAction = Boolean(
+    okResult?.actions?.some(
+      (a) => a.isDigitalTask === true && GUIDANCE_TASKS[a.taskType],
+    ),
+  )
   // A non-OK status carries a plain-language message to show on the input stage.
   // Processing errors use a translated message; the demo provider's own notices
   // (e.g. unsupported free text) are passed through as-is from the service.
@@ -296,7 +305,7 @@ function App() {
     <main className="dc-app">
       <AppHeader />
 
-      <StageProgress current={stage} />
+      <StageProgress current={stage} hasGuidance={hasGuidableAction} />
 
       {/* ---------------- Stage 1: Message ---------------- */}
       {stage === STAGE.INPUT && (

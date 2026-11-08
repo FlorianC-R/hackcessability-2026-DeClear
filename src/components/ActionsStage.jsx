@@ -88,7 +88,15 @@ function ActionsStage({
           <div className="dc-block">
             <h3>{t('result.actions.heading')}</h3>
             {result.actions.length === 0 ? (
-              <p className="dc-empty">{t('result.actions.none')}</p>
+              // Clear, positive completion state: no task was invented, and the
+              // workflow has finished successfully at the explanation.
+              <div className="dc-done" role="status">
+                <span className="dc-done__symbol" aria-hidden="true">
+                  {'\u2713'}
+                </span>
+                <p className="dc-done__text">{t('result.actions.doneTitle')}</p>
+                <p className="dc-help-text">{t('result.actions.doneHint')}</p>
+              </div>
             ) : (
               <ul className="dc-action-list">
                 {result.actions.map((action) => {

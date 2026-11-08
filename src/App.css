@@ -864,3 +864,29 @@
   color: var(--dc-ink);
   margin: 0;
 }
+
+/* Completion state shown in the Actions block when a message needs no action.
+   A calm, positive "you're done" message — no invented task. */
+.dc-done {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px;
+  border: 2px solid var(--dc-line);
+  border-left: 6px solid var(--dc-accent);
+  border-radius: var(--dc-radius);
+  background: var(--dc-surface-alt);
+}
+
+.dc-done__symbol {
+  font-size: 26px;
+  line-height: 1;
+  color: var(--dc-accent);
+}
+
+.dc-done__text {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--dc-ink);
+}

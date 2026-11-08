@@ -76,6 +76,8 @@ export default {
   'result.dates.unknown': '日期未明确说明',
   'result.actions.heading': '您需要做的事',
   'result.actions.none': '未找到需要做的事。',
+  'result.actions.doneTitle': '目前您无需做任何事。',
+  'result.actions.doneHint': '这条信息已经看完了。您随时可以开始一条新信息。',
   'result.explanation.show': '显示完整解释',
   'result.reply.show': '显示一条您可以发送的回复',
   'result.reply.note': '这只是一个建议，您可以自行选择是否使用。DeClear 不会替您发送任何内容。',

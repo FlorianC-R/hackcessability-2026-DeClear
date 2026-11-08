@@ -17,10 +17,14 @@ async function explainSample(user, title) {
   await user.click(screen.getByRole('button', { name: /explain this message/i }))
 }
 
+const billSample = sampleNotifications.find((s) => s.id === 'electricity-bill')
+const familySample = sampleNotifications.find((s) => s.id === 'family-message')
+
 describe('App — three-stage navigation', () => {
-  it('starts on the Message stage (step 1 of 3)', () => {
+  it('starts on the Message stage (step 1; guidance step not yet shown)', () => {
     render(<App />)
-    expect(screen.getByText(/step 1 of 3/i)).toBeInTheDocument()
+    // No result yet, so the progress shows the two base steps only.
+    expect(screen.getByText(/step 1 of 2/i)).toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: /explain this message/i }),
     ).toBeInTheDocument()
@@ -111,7 +115,8 @@ describe('App — start a new message resets everything', () => {
     await screen.findByText(/step 2 of 3/i)
 
     await user.click(screen.getByRole('button', { name: /start a new message/i }))
-    await screen.findByText(/step 1 of 3/i)
+    // Back to a fresh message stage: no result, so the guidance step is gone.
+    await screen.findByText(/step 1 of 2/i)
 
     const textarea = screen.getByRole('textbox')
     expect(textarea).toHaveValue('')
@@ -180,5 +185,63 @@ describe('App — language switching translates the whole interface', () => {
     expect(
       screen.getByRole('button', { name: /解释这条信息/ }),
     ).toBeInTheDocument()
+  })
+})
+
+describe('App — conditional guidance stage (outcomes)', () => {
+  it('no-action message (Sarah) ends at a completion state, no guidance step', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await explainSample(user, familySample.title)
+    await screen.findByText(/step 2 of 2/i) // two-step flow, not three
+
+    // Clear, positive completion — no invented task. (The phrase may also appear
+    // in the explanation text, so allow more than one match.)
+    expect(
+      screen.getByText('Nothing you need to do right now.'),
+    ).toBeInTheDocument()
+    // The explanation content is still shown (tentative visit, will call). The
+    // phrase appears in the explanation and the uncertainty note, so allow many.
+    expect(screen.getAllByText(/will call/i).length).toBeGreaterThan(0)
+    // No guidance affordance and no false "step 3".
+    expect(
+      screen.queryByRole('button', { name: /help me do this/i }),
+    ).toBeNull()
+    expect(screen.queryByText(/of 3/i)).toBeNull()
+    // Can start over.
+    expect(
+      screen.getByRole('button', { name: /start a new message/i }),
+    ).toBeInTheDocument()
+  })
+
+  it('non-digital action is shown without implying a walkthrough exists', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await explainSample(user, billSample.title)
+    await screen.findByText(/step 2 of 2/i) // no guidable task -> two steps
+
+    // The extracted action appears (match the amount, which is unique to the
+    // action text, not the date label).
+    expect(screen.getByText(/\$84\.60/)).toBeInTheDocument()
+    // ...but there is no "Help me do this" button (not a supported digital task).
+    expect(
+      screen.queryByRole('button', { name: /help me do this/i }),
+    ).toBeNull()
+  })
+
+  it('supported digital task keeps the guidance step and walkthrough', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await explainSample(user, photosSample.title)
+    // Guidable -> three-step flow is shown.
+    await screen.findByText(/step 2 of 3/i)
+    expect(
+      screen.getByRole('button', { name: /help me do this/i }),
+    ).toBeInTheDocument()
+
+    await user.click(screen.getByRole('button', { name: /help me do this/i }))
+    await waitFor(() =>
+      expect(screen.getByText(/step 3 of 3/i)).toBeInTheDocument(),
+    )
   })
 })

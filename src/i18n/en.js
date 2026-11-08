@@ -97,6 +97,9 @@ export default {
   'result.dates.unknown': 'Date not clearly stated',
   'result.actions.heading': 'What you need to do',
   'result.actions.none': 'No required actions were found.',
+  'result.actions.doneTitle': 'Nothing you need to do right now.',
+  'result.actions.doneHint':
+    'You have reached the end for this message. You can start a new message whenever you like.',
   'result.explanation.show': 'Show the full explanation',
   'result.reply.show': 'Show a reply you could send',
   'result.reply.note':

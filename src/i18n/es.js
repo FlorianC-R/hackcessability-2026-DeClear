@@ -85,6 +85,9 @@ export default {
   'result.dates.unknown': 'Fecha no indicada con claridad',
   'result.actions.heading': 'Lo que debe hacer',
   'result.actions.none': 'No se encontraron acciones necesarias.',
+  'result.actions.doneTitle': 'No hay nada que deba hacer ahora mismo.',
+  'result.actions.doneHint':
+    'Ha llegado al final de este mensaje. Puede empezar un mensaje nuevo cuando quiera.',
   'result.explanation.show': 'Mostrar la explicación completa',
   'result.reply.show': 'Mostrar una respuesta que podría enviar',
   'result.reply.note':
