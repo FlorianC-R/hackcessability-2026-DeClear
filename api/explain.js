@@ -102,8 +102,16 @@ export default async function handler(req, res) {
     })
     res.status(200).json({ result })
   } catch (err) {
+    // Safe diagnostics: log only the error code, the upstream HTTP status, and
+    // a short snippet of Gemini's error body. We never log the API key, the
+    // user's message, or any request headers.
+    console.error('[explain] processing failed', {
+      code: err?.code ?? 'unknown',
+      upstreamStatus: err?.upstreamStatus,
+      upstreamDetail: err?.upstreamDetail,
+    })
     // Map internal error codes to safe, user-facing responses. We never include
-    // the key or raw upstream details.
+    // the key or raw upstream details in the response to the browser.
     const code = err?.code
     if (code === 'quota') {
       res.status(429).json({

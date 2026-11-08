@@ -106,6 +106,13 @@ export default async function handler(req, res) {
     })
     res.status(200).json({ guidance })
   } catch (err) {
+    // Safe diagnostics only: error code, upstream HTTP status, short body
+    // snippet. Never the API key, the user's text, or the screenshot.
+    console.error('[guide] generation failed', {
+      code: err?.code ?? 'unknown',
+      upstreamStatus: err?.upstreamStatus,
+      upstreamDetail: err?.upstreamDetail,
+    })
     const code = err?.code
     if (code === 'quota') {
       res.status(429).json({

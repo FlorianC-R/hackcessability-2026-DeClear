@@ -139,10 +139,22 @@ export async function generateExplanation({
     if (response.status === 429) {
       const error = new Error('Gemini free-tier limit reached')
       error.code = 'quota'
+      error.upstreamStatus = 429
       throw error
+    }
+    // Capture a short snippet of Gemini's error body for diagnostics. Gemini
+    // error bodies describe the problem (e.g. an unknown model) and do NOT
+    // contain the API key, so this is safe to surface in server logs.
+    let detail
+    try {
+      detail = (await response.text()).slice(0, 300)
+    } catch {
+      detail = ''
     }
     const error = new Error(`Gemini responded with status ${response.status}`)
     error.code = 'upstream'
+    error.upstreamStatus = response.status
+    error.upstreamDetail = detail
     throw error
   }
 
