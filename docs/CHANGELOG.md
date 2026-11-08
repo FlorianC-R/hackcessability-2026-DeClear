@@ -8,6 +8,31 @@ Please do not edit entries by hand. Add notes above this line if needed.
 
 <!-- CHANGELOG:START -->
 <!-- New entries are inserted below this marker, newest first. -->
+### `29a3271` — 2026-11-07 19:20
+
+**feat: add Gemini free-tier AI provider via serverless /api/explain with consent + grounding**
+
+Changed files:
+
+- `.env.example`
+- `api/_lib/gemini.js`
+- `api/_lib/gemini.test.js`
+- `api/_lib/rateLimit.js`
+- `api/explain.js`
+- `eslint.config.js`
+- `src/App.jsx`
+- `src/components/SettingsPanel.jsx`
+- `src/data/settingsOptions.js`
+- `src/services/processorTypes.js`
+- `src/services/providers/geminiProvider.js`
+- `src/services/providers/geminiProvider.test.js`
+- `src/services/providers/index.js`
+- `src/services/resultSchema.js`
+- `src/services/resultSchema.test.js`
+- `src/storage/settingsStorage.js`
+
+Stats: 16 files changed, 1130 insertions(+), 7 deletions(-)
+
 ### `99ea172` — 2026-11-07 18:30
 
 **async notification processing refactor**
