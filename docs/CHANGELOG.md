@@ -8,6 +8,18 @@ Please do not edit entries by hand. Add notes above this line if needed.
 
 <!-- CHANGELOG:START -->
 <!-- New entries are inserted below this marker, newest first. -->
+### `476732d` — 2026-11-08 01:04
+
+**style: inline Explain loading state, teal accent, colour-coded urgency levels**
+
+Changed files:
+
+- `src/App.css`
+- `src/App.jsx`
+- `src/components/NotificationInput.jsx`
+
+Stats: 3 files changed, 101 insertions(+), 8 deletions(-)
+
 ### `e100e0b` — 2026-11-08 00:43
 
 **fix: make guidance stage conditional so no-action messages complete cleanly**
