@@ -8,6 +8,17 @@ Please do not edit entries by hand. Add notes above this line if needed.
 
 <!-- CHANGELOG:START -->
 <!-- New entries are inserted below this marker, newest first. -->
+### `0113c86` — 2026-11-08 00:24
+
+**fix: show settings only on the message stage so language can't desync generated output**
+
+Changed files:
+
+- `src/App.jsx`
+- `src/App.test.jsx`
+
+Stats: 2 files changed, 13 insertions(+), 7 deletions(-)
+
 ### `3d72d9c` — 2026-11-08 00:22
 
 **style: warm theme, brand font, brighter dark mode, reordered message stage, CTA polish**
