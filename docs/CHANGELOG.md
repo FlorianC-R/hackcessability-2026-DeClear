@@ -8,6 +8,24 @@ Please do not edit entries by hand. Add notes above this line if needed.
 
 <!-- CHANGELOG:START -->
 <!-- New entries are inserted below this marker, newest first. -->
+### `e100e0b` — 2026-11-08 00:43
+
+**fix: make guidance stage conditional so no-action messages complete cleanly**
+
+Changed files:
+
+- `src/App.css`
+- `src/App.jsx`
+- `src/App.test.jsx`
+- `src/components/ActionsStage.jsx`
+- `src/components/StageProgress.jsx`
+- `src/i18n/en.js`
+- `src/i18n/es.js`
+- `src/i18n/fr.js`
+- `src/i18n/zh-CN.js`
+
+Stats: 9 files changed, 138 insertions(+), 14 deletions(-)
+
 ### `0113c86` — 2026-11-08 00:24
 
 **fix: show settings only on the message stage so language can't desync generated output**
