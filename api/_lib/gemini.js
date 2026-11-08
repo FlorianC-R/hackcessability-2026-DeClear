@@ -10,8 +10,13 @@ import { normalizeResult, groundResult } from '../../src/services/resultSchema.j
 // Hard limits (also enforced client-side, re-checked here because the route is
 // public and cannot trust the caller).
 export const MAX_INPUT_CHARS = 5000
-export const MAX_OUTPUT_TOKENS = 800
-export const REQUEST_TIMEOUT_MS = 20000
+// Generous cap. Some Gemini "thinking" models (e.g. gemini-3.x flash) spend
+// output tokens on an internal reasoning step before answering, so a small cap
+// can leave no room for the actual JSON and return an empty result. We also ask
+// the model to skip thinking (see thinkingConfig below); the larger cap is a
+// safety net in case a model ignores that.
+export const MAX_OUTPUT_TOKENS = 2048
+export const REQUEST_TIMEOUT_MS = 30000
 
 const SUPPORTED_LANGUAGES = { en: 'English', fr: 'French' }
 const SUPPORTED_LEVELS = { brief: 'brief', standard: 'standard', guided: 'guided' }
@@ -105,6 +110,10 @@ export async function generateExplanation({
       maxOutputTokens: MAX_OUTPUT_TOKENS,
       temperature: 0.2,
       responseMimeType: 'application/json',
+      // Ask "thinking" models to skip the internal reasoning step so the token
+      // budget goes to the actual answer. Models that don't support this field
+      // simply ignore it, and the larger maxOutputTokens still covers us.
+      thinkingConfig: { thinkingBudget: 0 },
     },
   }
 
@@ -163,6 +172,8 @@ export async function generateExplanation({
   if (!text) {
     const error = new Error('Gemini returned an empty response')
     error.code = 'invalid'
+    // Surface why it was empty (e.g. finishReason "MAX_TOKENS") for diagnostics.
+    error.upstreamDetail = `finishReason=${data?.candidates?.[0]?.finishReason ?? 'unknown'}`
     throw error
   }
 

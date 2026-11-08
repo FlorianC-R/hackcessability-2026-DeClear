@@ -11,8 +11,11 @@
 
 import { normalizeGuidance } from '../../src/services/guidanceSchema.js'
 
-export const MAX_OUTPUT_TOKENS = 900
-export const REQUEST_TIMEOUT_MS = 25000
+// Generous cap so "thinking" models (e.g. gemini-3.x flash) have room for the
+// actual step list after any internal reasoning. We also request no thinking
+// (see thinkingConfig below); this larger cap is a safety net.
+export const MAX_OUTPUT_TOKENS = 2048
+export const REQUEST_TIMEOUT_MS = 30000
 // ~1.5MB of base64 (roughly ~1.1MB raw image). Keeps requests small/fast.
 export const MAX_IMAGE_BASE64_CHARS = 1_500_000
 export const ALLOWED_IMAGE_TYPES = ['image/png', 'image/jpeg', 'image/webp']
@@ -121,6 +124,9 @@ export async function generateGuidance({
       maxOutputTokens: MAX_OUTPUT_TOKENS,
       temperature: 0.3,
       responseMimeType: 'application/json',
+      // Skip the internal reasoning step on "thinking" models so the token
+      // budget produces the actual steps. Ignored by models without it.
+      thinkingConfig: { thinkingBudget: 0 },
     },
   }
 
@@ -172,6 +178,7 @@ export async function generateGuidance({
   if (!text) {
     const e = new Error('Gemini returned an empty response')
     e.code = 'invalid'
+    e.upstreamDetail = `finishReason=${data?.candidates?.[0]?.finishReason ?? 'unknown'}`
     throw e
   }
 
