@@ -22,11 +22,12 @@ function NotificationInput({
   onExplain,
   notice,
   settingsSlot,
+  isProcessing = false,
 }) {
   const { t, language } = useTranslation()
   const trimmedLength = text.trim().length
   const tooLong = text.length > MAX_LENGTH
-  const canExplain = trimmedLength > 0 && !tooLong
+  const canExplain = trimmedLength > 0 && !tooLong && !isProcessing
   const showCounter = text.length >= COUNTER_THRESHOLD
 
   return (
@@ -69,8 +70,16 @@ function NotificationInput({
         className="dc-primary-button"
         onClick={onExplain}
         disabled={!canExplain}
+        aria-busy={isProcessing}
       >
-        {t('input.explain')}
+        {isProcessing ? (
+          <span className="dc-btn-loading" role="status" aria-live="polite">
+            <span className="dc-spinner" aria-hidden="true" />
+            {t('processing.message')}
+          </span>
+        ) : (
+          t('input.explain')
+        )}
       </button>
 
       {settingsSlot}

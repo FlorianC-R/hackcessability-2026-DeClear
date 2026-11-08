@@ -18,6 +18,16 @@
   --dc-focus: #b23a1e;
   --dc-warn-bg: #fdecd0;
   --dc-warn-ink: #7a3d00;
+  /* Semi-dark teal: a complementary secondary accent to the warm palette. Deep
+     enough to stay high-contrast on the light surfaces. */
+  --dc-teal: #0f6b6b;
+  /* Urgency colours for the symbol + label only. Muted but logical: neutral,
+     green, amber, red. The word label is always shown too, so meaning never
+     relies on colour alone. */
+  --dc-urg-none: #5c4636;
+  --dc-urg-low: #2f7d4f;
+  --dc-urg-medium: #a66300;
+  --dc-urg-high: #b23a1e;
   --dc-radius: 12px;
   --dc-gap: 28px;
 }
@@ -34,6 +44,13 @@
     --dc-focus: #ff9e73;
     --dc-warn-bg: #4a3722;
     --dc-warn-ink: #ffe3b8;
+    /* Lighter teal so it stays visible on the dark warm base. */
+    --dc-teal: #5bc6c0;
+    /* Lighter urgency colours for contrast on the dark base. */
+    --dc-urg-none: #d8c3b2;
+    --dc-urg-low: #6fcf97;
+    --dc-urg-medium: #e6b35c;
+    --dc-urg-high: #ff9e73;
   }
 }
 
@@ -345,6 +362,26 @@
   grid-area: label;
   font-size: 22px;
   font-weight: 700;
+}
+
+/* Per-level colour for the urgency symbol and label only (muted, logical:
+   neutral / green / amber / red). The word label and shape symbol still carry
+   the meaning, so colour is reinforcement, never the sole signal. */
+.dc-urgency--none .dc-urgency__symbol,
+.dc-urgency--none .dc-urgency__label {
+  color: var(--dc-urg-none);
+}
+.dc-urgency--low .dc-urgency__symbol,
+.dc-urgency--low .dc-urgency__label {
+  color: var(--dc-urg-low);
+}
+.dc-urgency--medium .dc-urgency__symbol,
+.dc-urgency--medium .dc-urgency__label {
+  color: var(--dc-urg-medium);
+}
+.dc-urgency--high .dc-urgency__symbol,
+.dc-urgency--high .dc-urgency__label {
+  color: var(--dc-urg-high);
 }
 
 .dc-urgency__note {
@@ -889,4 +926,55 @@
   font-size: 20px;
   font-weight: 700;
   color: var(--dc-ink);
+}
+
+/* ---------- Inline button loading state ---------- */
+.dc-btn-loading {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.dc-spinner {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  border: 3px solid color-mix(in srgb, var(--dc-accent-ink) 35%, transparent);
+  border-top-color: var(--dc-accent-ink);
+  border-radius: 50%;
+  animation: dc-spin 0.8s linear infinite;
+}
+
+@keyframes dc-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Respect reduced-motion: no spin, just a steady dot so the label still reads
+   as "working". */
+@media (prefers-reduced-motion: reduce) {
+  .dc-spinner {
+    animation: none;
+    border-top-color: transparent;
+    background: var(--dc-accent-ink);
+  }
+}
+
+/* ---------- Teal secondary accent ----------
+   A semi-dark teal used sparingly as a complementary note to the warm palette:
+   the completed progress steps, the "done" checkmark, and the disclosure
+   toggles. It pairs naturally with terracotta without competing with the
+   primary call-to-action. */
+.dc-progress__step.is-done {
+  color: var(--dc-teal);
+}
+
+.dc-done__symbol {
+  color: var(--dc-teal);
+}
+
+.dc-disclosure__summary {
+  color: var(--dc-teal);
 }

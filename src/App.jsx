@@ -322,13 +322,9 @@ function App() {
             onExplain={handleExplain}
             notice={inputNotice}
             settingsSlot={settingsPanel}
+            isProcessing={isProcessing}
           />
-          {isProcessing && (
-            <p className="dc-processing" role="status" aria-live="polite">
-              {t('processing.message')}
-            </p>
-          )}
-          {okResult && (
+          {okResult && !isProcessing && (
             <div className="dc-stage__nav">
               <button
                 type="button"
