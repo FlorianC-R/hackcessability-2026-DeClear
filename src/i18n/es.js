@@ -3,7 +3,7 @@
 
 export default {
   'app.brand': 'DeClear',
-  'app.tagline': 'Entienda sus cartas y mensajes en palabras sencillas',
+  'app.tagline': 'Entienda su tecnología en palabras sencillas',
 
   'progress.count': 'Paso {current} de {total}',
   'progress.message': 'Mensaje',
@@ -63,9 +63,10 @@ export default {
   'language.es': 'Español',
   'language.zh-CN': 'Chino (简体中文)',
 
-  'input.heading': 'Elija un ejemplo o pegue su propio mensaje',
+  'input.heading': 'Pegue o escriba un mensaje',
   'input.samplesLabel': 'Mensajes de ejemplo',
-  'input.pasteLabel': 'O pegue su propio mensaje aquí',
+  'input.samplesHeading': 'O elija un ejemplo',
+  'input.pasteLabel': 'Pegue o escriba su mensaje aquí',
   'input.placeholder': 'Escriba o pegue una carta, factura o mensaje...',
   'input.counter': '{count} de {max} caracteres',
   'input.tooLong': '. Este mensaje es demasiado largo. Por favor, acórtelo.',

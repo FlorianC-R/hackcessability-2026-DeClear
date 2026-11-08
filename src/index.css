@@ -1,15 +1,23 @@
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
+  --text: #6b5d53;
+  --text-h: #2a1a10;
+  --bg: #fffaf4;
+  --border: #ecd9c8;
+  --code-bg: #faf0e6;
+  --accent: #b23a1e;
+  --accent-bg: rgba(178, 58, 30, 0.1);
+  --accent-border: rgba(178, 58, 30, 0.5);
+  --social-bg: rgba(250, 240, 230, 0.6);
   --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+    rgba(90, 40, 10, 0.1) 0 10px 15px -3px, rgba(90, 40, 10, 0.05) 0 4px 6px -2px;
+
+  /* Warm visual-polish tokens. A faint apricot tint for the page gradient and a
+     soft orange stroke for the decorative contour lines. Background and lines
+     share the same warm, low-contrast family; the buttons and text use deep
+     warm tones so they stand out clearly against it (important for older
+     readers). */
+  --dc-bg-tint: rgba(243, 146, 55, 0.12);
+  --dc-contour: rgba(230, 120, 40, 0.5);
 
   /* System font stacks with explicit CJK fallbacks so Simplified Chinese
      renders with a proper font on macOS/iOS, Windows, Android, and Linux
@@ -19,12 +27,20 @@
   --sans: system-ui, 'Segoe UI', Roboto, var(--cjk);
   --heading: system-ui, 'Segoe UI', Roboto, var(--cjk);
   --mono: ui-monospace, Consolas, monospace;
+  /* Brand wordmark: a refined, high-contrast serif that feels a little special
+     and sharp without being cartoony. Uses characterful system fonts (no web
+     font dependency), falling back to common serifs and finally sans-serif. */
+  --brand: 'Hoefler Text', 'Baskerville', 'Palatino Linotype', 'Palatino',
+    'Cambria', Georgia, 'Times New Roman', serif;
 
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
   color-scheme: light dark;
   color: var(--text);
-  background: var(--bg);
+  /* Base colour only. The decorative contour + gradient background lives on the
+     <body> (see below); keeping the root non-opaque means it never paints over
+     and hides those body background layers. */
+  background-color: var(--bg);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -37,26 +53,63 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
+    --text: #e2d1c2;
+    --text-h: #fdf3ea;
+    --bg: #2e241c;
+    --border: #50412f;
+    --code-bg: #3a2e24;
+    --accent: #ff9e73;
+    --accent-bg: rgba(255, 158, 115, 0.16);
+    --accent-border: rgba(255, 158, 115, 0.5);
+    --social-bg: rgba(66, 54, 42, 0.5);
     --shadow:
       rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
+
+    /* Warm, slightly stronger tint/stroke so the curves read on the dark base. */
+    --dc-bg-tint: rgba(255, 138, 92, 0.1);
+    --dc-contour: rgba(255, 150, 90, 0.18);
   }
 
   #social .button-icon {
     filter: invert(1) brightness(2);
   }
+
+  /* In dark mode, brighten the contour lines a little so they stay visible on
+     the dark base, and nudge the hue toward the lighter dark-mode accent. */
+  body {
+    background-blend-mode: screen, normal;
+  }
 }
 
 body {
   margin: 0;
+  min-height: 100svh;
+  /* Background is three layers painted on the body itself (top to bottom):
+       1) the decorative contour SVG (level curves),
+       2) a very subtle on-palette gradient tint,
+       3) the solid base colour.
+     Putting the curves directly in the body background guarantees they are
+     actually painted (an earlier ::before version was hidden behind the root
+     element's opaque background). The SVG's own stroke-opacity keeps the lines
+     low-contrast, and the app's cards paint solid surfaces over them locally so
+     text and buttons stay perfectly readable. */
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 900' preserveAspectRatio='xMidYMid slice'%3E%3Cg fill='none' stroke='%23e06a1e' stroke-opacity='0.4' stroke-width='1.4' vector-effect='non-scaling-stroke'%3E%3Cpath d='M-60 290 C 255 210, 535 375, 810 270 S 1170 230, 1270 320'/%3E%3Cpath d='M-60 375 C 260 295, 545 455, 820 350 S 1175 310, 1270 405'/%3E%3Cpath d='M-60 470 C 265 390, 550 550, 830 440 S 1180 400, 1270 500'/%3E%3Cpath d='M-60 575 C 270 495, 560 650, 840 540 S 1185 500, 1270 605'/%3E%3Cpath d='M-60 690 C 275 610, 565 760, 850 650 S 1190 610, 1270 720'/%3E%3Cpath d='M-60 815 C 280 735, 575 880, 860 770 S 1195 730, 1270 845'/%3E%3C/g%3E%3C/svg%3E"),
+    linear-gradient(170deg, var(--dc-bg-tint), transparent 55%);
+  background-color: var(--bg);
+  background-repeat: no-repeat, no-repeat;
+  background-position: center top, top center;
+  background-size: cover, 100% 100%;
+  background-attachment: fixed, scroll;
+}
+
+/* Under forced-colors (high-contrast) modes the decoration can look wrong, so
+   drop it and the gradient and fall back to the plain background. */
+@media (forced-colors: active) {
+  body {
+    background-image: none;
+    background-color: var(--bg);
+  }
 }
 
 #root {
@@ -67,6 +120,8 @@ body {
   min-height: 100svh;
   box-sizing: border-box;
   padding: 0 20px;
+  position: relative;
+  z-index: 0;
 }
 
 h1,

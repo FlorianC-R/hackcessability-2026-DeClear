@@ -5,33 +5,35 @@
    and large screens. */
 
 :root {
-  /* Accessible, high-contrast tokens layered on top of the base theme. */
-  --dc-ink: #1a1526;
-  --dc-ink-soft: #413a52;
-  --dc-surface: #ffffff;
-  --dc-surface-alt: #f6f4fb;
-  --dc-line: #cbc6d6;
-  --dc-accent: #6b2fb3;
+  /* Accessible, high-contrast warm tokens layered on top of the base theme.
+     Cards are near-white so the deep warm ink and terracotta accent stay
+     high-contrast against the soft apricot page background. */
+  --dc-ink: #2a1a10;
+  --dc-ink-soft: #5c4636;
+  --dc-surface: #fffdfb;
+  --dc-surface-alt: #fbeee2;
+  --dc-line: #e8c9b0;
+  --dc-accent: #b23a1e;
   --dc-accent-ink: #ffffff;
-  --dc-focus: #6b2fb3;
-  --dc-warn-bg: #fff4e0;
-  --dc-warn-ink: #5a3b00;
+  --dc-focus: #b23a1e;
+  --dc-warn-bg: #fdecd0;
+  --dc-warn-ink: #7a3d00;
   --dc-radius: 12px;
   --dc-gap: 28px;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --dc-ink: #f4f1fa;
-    --dc-ink-soft: #cdc7da;
-    --dc-surface: #1d1a26;
-    --dc-surface-alt: #262233;
-    --dc-line: #3d3850;
-    --dc-accent: #c79cff;
-    --dc-accent-ink: #1a1526;
-    --dc-focus: #c79cff;
-    --dc-warn-bg: #3a2e12;
-    --dc-warn-ink: #ffe3ad;
+    --dc-ink: #fdf3ea;
+    --dc-ink-soft: #e2d1c2;
+    --dc-surface: #352a20;
+    --dc-surface-alt: #43352a;
+    --dc-line: #5c4a39;
+    --dc-accent: #ff9e73;
+    --dc-accent-ink: #2e1a0e;
+    --dc-focus: #ff9e73;
+    --dc-warn-bg: #4a3722;
+    --dc-warn-ink: #ffe3b8;
   }
 }
 
@@ -60,18 +62,20 @@
 .dc-header {
   border-bottom: 2px solid var(--dc-line);
   padding-bottom: 20px;
+  text-align: center;
 }
 
 .dc-brand {
-  font-size: 22px;
+  font-family: var(--brand);
+  font-size: 44px;
   font-weight: 700;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.4px;
   color: var(--dc-accent);
-  margin: 0 0 8px;
+  margin: 0 0 6px;
 }
 
 .dc-tagline {
-  font-size: 32px;
+  font-size: 28px;
   line-height: 1.25;
   letter-spacing: normal;
   margin: 0;
@@ -79,8 +83,14 @@
 }
 
 @media (max-width: 640px) {
+  .dc-header {
+    padding-bottom: 16px;
+  }
+  .dc-brand {
+    font-size: 34px;
+  }
   .dc-tagline {
-    font-size: 26px;
+    font-size: 22px;
   }
 }
 
@@ -106,12 +116,19 @@
   color: var(--dc-ink);
 }
 
-/* ---------- Input section ---------- */
+/* ---------- Input section ----------
+   A flex column with one consistent gap, so the paste box, the Explain button,
+   the settings panel, and the examples are evenly spaced regardless of order. */
+.dc-input {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
 .dc-sample-list {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 16px;
-  margin-bottom: 28px;
 }
 
 @media (max-width: 720px) {
@@ -163,7 +180,8 @@
 }
 
 .dc-paste {
-  margin-bottom: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .dc-label {
@@ -172,6 +190,13 @@
   font-weight: 600;
   margin-bottom: 10px;
   color: var(--dc-ink);
+}
+
+/* The paste label doubles as the section's lead heading now that the box is
+   first, so make it a touch larger and more prominent. */
+.dc-label--lead {
+  font-size: 22px;
+  font-weight: 700;
 }
 
 .dc-textarea {
@@ -221,6 +246,28 @@
 .dc-primary-button:disabled {
   opacity: 0.55;
   cursor: not-allowed;
+}
+
+/* The "Explain this message" button is the main call to action on the first
+   stage, so give it a little more presence: a subtle solid drop shadow and a
+   slight hover lift. Scoped to the input section so other primary buttons stay
+   flat. */
+.dc-input > .dc-primary-button {
+  box-shadow: 0 4px 0 var(--dc-accent-border), 0 6px 14px rgba(90, 40, 10, 0.18);
+}
+
+.dc-input > .dc-primary-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.dc-input > .dc-primary-button:disabled {
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dc-input > .dc-primary-button:hover:not(:disabled) {
+    transform: none;
+  }
 }
 
 .dc-secondary-button {
@@ -801,4 +848,19 @@
 .dc-guide__instruction,
 .dc-action-card__text {
   overflow-wrap: break-word;
+}
+
+/* "Or choose an example" heading + cards (now below the paste box and the
+   settings panel). The outer .dc-input flex gap handles spacing above this
+   block; this inner gap spaces the heading from its cards. */
+.dc-samples {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.dc-samples__heading {
+  font-size: 20px;
+  color: var(--dc-ink);
+  margin: 0;
 }

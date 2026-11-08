@@ -277,19 +277,26 @@ function App() {
     ? t(guidanceNoticeKey(guideNotice) ?? 'guide.notice.unavailable')
     : ''
 
+  // The settings panel is rendered on every stage, but on the Message stage it
+  // sits between the paste box and the examples (passed as a slot into
+  // NotificationInput). On other stages it stays at the top.
+  const settingsPanel = (
+    <SettingsPanel
+      settings={settings}
+      onChange={handleSettingsChange}
+      isOpen={isSettingsOpen}
+      onToggle={() => setIsSettingsOpen((open) => !open)}
+      speechSupported={speechSupported}
+      saveFailed={saveFailed}
+    />
+  )
+
   return (
     <LanguageProvider language={settings.language}>
     <main className="dc-app">
       <AppHeader />
 
-      <SettingsPanel
-        settings={settings}
-        onChange={handleSettingsChange}
-        isOpen={isSettingsOpen}
-        onToggle={() => setIsSettingsOpen((open) => !open)}
-        speechSupported={speechSupported}
-        saveFailed={saveFailed}
-      />
+      {stage !== STAGE.INPUT && settingsPanel}
 
       <StageProgress current={stage} />
 
@@ -307,6 +314,7 @@ function App() {
             onChangeText={handleChangeText}
             onExplain={handleExplain}
             notice={inputNotice}
+            settingsSlot={settingsPanel}
           />
           {isProcessing && (
             <p className="dc-processing" role="status" aria-live="polite">

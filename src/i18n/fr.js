@@ -3,7 +3,7 @@
 
 export default {
   'app.brand': 'DeClear',
-  'app.tagline': 'Comprenez vos courriers et messages en mots simples',
+  'app.tagline': 'Comprenez votre technologie en mots simples',
 
   'progress.count': 'Étape {current} sur {total}',
   'progress.message': 'Message',
@@ -63,9 +63,10 @@ export default {
   'language.es': 'Espagnol (Español)',
   'language.zh-CN': 'Chinois (简体中文)',
 
-  'input.heading': 'Choisissez un exemple ou collez votre propre message',
+  'input.heading': 'Collez ou saisissez un message',
   'input.samplesLabel': 'Messages d’exemple',
-  'input.pasteLabel': 'Ou collez votre propre message ici',
+  'input.samplesHeading': 'Ou choisissez un exemple',
+  'input.pasteLabel': 'Collez ou saisissez votre message ici',
   'input.placeholder': 'Saisissez ou collez une lettre, une facture ou un message...',
   'input.counter': '{count} sur {max} caractères',
   'input.tooLong': '. Ce message est trop long. Veuillez le raccourcir.',

@@ -3,7 +3,7 @@
 
 export default {
   'app.brand': 'DeClear',
-  'app.tagline': '用简单易懂的话，帮您看懂信件和信息',
+  'app.tagline': '用简单易懂的话，帮您看懂手机和电脑',
 
   'progress.count': '第 {current} 步，共 {total} 步',
   'progress.message': '信息',
@@ -55,9 +55,10 @@ export default {
   'language.es': '西班牙语 (Español)',
   'language.zh-CN': '简体中文',
 
-  'input.heading': '选择一个示例，或粘贴您自己的信息',
+  'input.heading': '粘贴或输入一条信息',
   'input.samplesLabel': '示例信息',
-  'input.pasteLabel': '或在此粘贴您自己的信息',
+  'input.samplesHeading': '或选择一个示例',
+  'input.pasteLabel': '在此粘贴或输入您的信息',
   'input.placeholder': '输入或粘贴一封信、一张账单或一条信息……',
   'input.counter': '{count} / {max} 个字符',
   'input.tooLong': '。这条信息太长了，请缩短后再试。',

@@ -8,7 +8,7 @@
 export default {
   // Header
   'app.brand': 'DeClear',
-  'app.tagline': 'Understand your letters and messages in plain words',
+  'app.tagline': 'Understand your technology in plain words',
 
   // Stage progress
   'progress.count': 'Step {current} of {total}',
@@ -72,9 +72,10 @@ export default {
   'language.zh-CN': 'Chinese (简体中文)',
 
   // Message input
-  'input.heading': 'Choose an example or paste your own message',
+  'input.heading': 'Paste or type a message',
   'input.samplesLabel': 'Example messages',
-  'input.pasteLabel': 'Or paste your own message here',
+  'input.samplesHeading': 'Or choose an example',
+  'input.pasteLabel': 'Paste or type your message here',
   'input.placeholder': 'Type or paste a letter, bill, or message...',
   'input.counter': '{count} of {max} characters',
   'input.tooLong': '. This message is too long. Please shorten it.',
