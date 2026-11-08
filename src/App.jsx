@@ -118,6 +118,15 @@ function App() {
   }
 
   function handleSelectSample(id) {
+    // Clicking the already-selected example again de-selects it: clear the box
+    // and any result, as if it had never been touched.
+    if (id === selectedSampleId) {
+      setSelectedSampleId(null)
+      setText('')
+      clearResult()
+      setIsOriginalOpen(false)
+      return
+    }
     const sample = sampleNotifications.find((item) => item.id === id)
     if (!sample) return
     setSelectedSampleId(id)

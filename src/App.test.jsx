@@ -30,6 +30,20 @@ describe('App — example cards', () => {
   })
 })
 
+describe('App — example cards toggle', () => {
+  it('clicking a selected example again clears the box', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    const card = screen.getByText(billSample.title).closest('button')
+
+    await user.click(card) // select -> fills the box
+    expect(screen.getByRole('textbox')).not.toHaveValue('')
+
+    await user.click(card) // click again -> clears
+    expect(screen.getByRole('textbox')).toHaveValue('')
+  })
+})
+
 describe('App — three-stage navigation', () => {
   it('starts on the Message stage (step 1; guidance step not yet shown)', () => {
     render(<App />)
